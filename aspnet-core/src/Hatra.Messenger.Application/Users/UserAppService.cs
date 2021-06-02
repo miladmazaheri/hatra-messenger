@@ -25,7 +25,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Hatra.Messenger.Users
 {
-    [RemoteService(false)]
+    
     [AbpAuthorize(PermissionNames.Pages_Users)]
     public class UserAppService : AsyncCrudAppService<User, UserDto, long, PagedUserResultRequestDto, CreateUserDto, UserDto>, IUserAppService
     {

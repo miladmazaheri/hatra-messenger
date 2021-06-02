@@ -130,5 +130,9 @@ export class UsersComponent extends PagedListingComponentBase<UserDto> {
     createOrEditUserDialog.content.onSave.subscribe(() => {
       this.refresh();
     });
+   
+  }
+  uploadExcel(){
+      this.notify.warn(this.l("NotImplemented"));
   }
 }

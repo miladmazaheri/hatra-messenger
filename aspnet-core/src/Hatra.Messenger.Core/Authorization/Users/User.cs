@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Runtime.CompilerServices;
 using Abp.Authorization.Users;
 using Abp.Extensions;
 
@@ -9,6 +10,7 @@ namespace Hatra.Messenger.Authorization.Users
     {
         public const string DefaultPassword = "123qwe";
 
+        
         public static string CreateRandomPassword()
         {
             return Guid.NewGuid().ToString("N").Truncate(16);

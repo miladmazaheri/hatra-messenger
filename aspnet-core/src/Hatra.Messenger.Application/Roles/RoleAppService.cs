@@ -18,7 +18,7 @@ using Microsoft.EntityFrameworkCore;
 namespace Hatra.Messenger.Roles
 {
     [AbpAuthorize(PermissionNames.Pages_Roles)]
-    [RemoteService(false)]
+    
     public class RoleAppService : AsyncCrudAppService<Role, RoleDto, int, PagedRoleResultRequestDto, CreateRoleDto, RoleDto>, IRoleAppService
     {
         private readonly RoleManager _roleManager;

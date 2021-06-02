@@ -6,7 +6,7 @@ using Hatra.Messenger.Users.Dto;
 
 namespace Hatra.Messenger.Users
 {
-    [RemoteService(false)]
+    
     public interface IUserAppService : IAsyncCrudAppService<UserDto, long, PagedUserResultRequestDto, CreateUserDto, UserDto>
     {
         Task DeActivate(EntityDto<long> user);

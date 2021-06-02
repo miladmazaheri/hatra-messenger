@@ -2,17 +2,29 @@
 using Abp.Zero.EntityFrameworkCore;
 using Hatra.Messenger.Authorization.Roles;
 using Hatra.Messenger.Authorization.Users;
+using Hatra.Messenger.Chats;
+using Hatra.Messenger.Chats.Entities;
 using Hatra.Messenger.MultiTenancy;
 
 namespace Hatra.Messenger.EntityFrameworkCore
 {
     public class MessengerDbContext : AbpZeroDbContext<Tenant, Role, User, MessengerDbContext>
     {
-        /* Define a DbSet for each entity of the application */
-        
+        public virtual DbSet<Chat> Chats{ get; set; }
+        public virtual DbSet<ChatContent> ChatContents{ get; set; }
+        public virtual DbSet<ChatParticipant> ChatParticipants{ get; set; }
+        public virtual DbSet<ChatMedia> ChatMedias{ get; set; }
+
         public MessengerDbContext(DbContextOptions<MessengerDbContext> options)
             : base(options)
         {
+        }
+
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        {
+            base.OnModelCreating(modelBuilder);
+
+            modelBuilder.ConfigureChat();
         }
     }
 }

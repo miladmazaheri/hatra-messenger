@@ -4,7 +4,7 @@ using Hatra.Messenger.Authorization.Accounts.Dto;
 
 namespace Hatra.Messenger.Authorization.Accounts
 {
-    [RemoteService(false)]
+    
     public interface IAccountAppService : IApplicationService
     {
         Task<IsTenantAvailableOutput> IsTenantAvailable(IsTenantAvailableInput input);

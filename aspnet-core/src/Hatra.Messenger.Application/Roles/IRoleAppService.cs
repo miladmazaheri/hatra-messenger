@@ -5,7 +5,7 @@ using Hatra.Messenger.Roles.Dto;
 
 namespace Hatra.Messenger.Roles
 {
-    [RemoteService(false)]
+    
     public interface IRoleAppService : IAsyncCrudAppService<RoleDto, int, PagedRoleResultRequestDto, CreateRoleDto, RoleDto>
     {
         Task<ListResultDto<PermissionDto>> GetAllPermissions();

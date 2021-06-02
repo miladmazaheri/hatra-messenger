@@ -7,7 +7,7 @@ using Hatra.Messenger.Configuration.Dto;
 namespace Hatra.Messenger.Configuration
 {
     [AbpAuthorize]
-    [RemoteService(false)]
+    
     public class ConfigurationAppService : MessengerAppServiceBase, IConfigurationAppService
     {
         public async Task ChangeUiTheme(ChangeUiThemeInput input)

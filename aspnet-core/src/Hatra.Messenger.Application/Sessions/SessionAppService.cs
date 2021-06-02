@@ -6,7 +6,7 @@ using Hatra.Messenger.Sessions.Dto;
 
 namespace Hatra.Messenger.Sessions
 {
-    [RemoteService(false)]
+    
     public class SessionAppService : MessengerAppServiceBase, ISessionAppService
     {
         [DisableAuditing]

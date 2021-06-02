@@ -117,5 +117,9 @@
     <text name="ResetPasswordStepOneInfo">1. رمز عبور ادمین را وارد کنید</text>
     <text name="ResetPasswordStepTwoInfo">2. رمز تصادفی را کپی کنید تا آن را برای کاربر ارسال نمایید</text>
     <text name="UsersActivation">فعالسازی کاربران</text>
+    <text name="AppTitle">پیام رسان هاترا</text>
+    <text name="UploadExcel">بارگذاری فایل اکسل</text>
+    <text name="NotImplemented">این بخش در حال توسعه است</text>
+
   </texts>
 </localizationDictionary>

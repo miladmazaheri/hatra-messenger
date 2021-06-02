@@ -56,10 +56,24 @@ namespace Hatra.Messenger.Web.Host.Startup
          * SignalR can not send authorization header. So, we are getting it from query string as an encrypted text. */
         private static Task QueryStringTokenResolver(MessageReceivedContext context)
         {
-            if (!context.HttpContext.Request.Path.HasValue ||
-                !context.HttpContext.Request.Path.Value.StartsWith("/signalr"))
+            var path = context.HttpContext.Request.Path;
+            if (!path.HasValue)
             {
-                // We are just looking for signalr clients
+                return Task.CompletedTask;
+            }
+
+            if (path.Value.StartsWith("/chat-hub"))
+            {
+                var accessToken = context.Request.Query["access_token"];
+                if (!string.IsNullOrEmpty(accessToken))
+                {
+                    context.Token = accessToken;
+                }
+                return Task.CompletedTask;
+            }
+
+            if (!path.Value.StartsWith("/signalr"))
+            {
                 return Task.CompletedTask;
             }
 

@@ -23,6 +23,7 @@ using Microsoft.OpenApi.Models;
 using Newtonsoft.Json.Serialization;
 using Abp.AspNetCore.SignalR.Hubs;
 using Hatra.Messenger.Web.Host.Hubs;
+using Swashbuckle.AspNetCore.SwaggerUI;
 
 namespace Hatra.Messenger.Web.Host.Startup
 {
@@ -161,7 +162,10 @@ namespace Hatra.Messenger.Web.Host.Startup
             });
 
             // Enable middleware to serve generated Swagger as a JSON endpoint
-            app.UseSwagger(c => { c.RouteTemplate = "swagger/{documentName}/swagger.json"; });
+            app.UseSwagger(c =>
+            {
+                c.RouteTemplate = "swagger/{documentName}/swagger.json";
+            });
 
             // Enable middleware to serve swagger-ui assets (HTML, JS, CSS etc.)
             app.UseSwaggerUI(options =>
@@ -171,6 +175,7 @@ namespace Hatra.Messenger.Web.Host.Startup
                 options.IndexStream = () => Assembly.GetExecutingAssembly()
                     .GetManifestResourceStream("Hatra.Messenger.Web.Host.wwwroot.swagger.ui.index.html");
                 options.DisplayRequestDuration(); // Controls the display of the request duration (in milliseconds) for "Try it out" requests.  
+                options.DocExpansion(DocExpansion.None);
             }); // URL: /swagger
 
 

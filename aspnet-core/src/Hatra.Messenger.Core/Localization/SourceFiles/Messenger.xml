@@ -117,5 +117,8 @@
     <text name="ResetPasswordStepOneInfo">1. Enter your administrator password</text>
     <text name="ResetPasswordStepTwoInfo">2. Copy this random password so you can send it to the user</text>
     <text name="UsersActivation">Users activation</text>
+    <text name="AppTitle">Hatra Messenger</text>
+    <text name="UploadExcel">Upload Excel File</text>
+    <text name="NotImplemented">Not Implemented Yet!</text>
   </texts>
 </localizationDictionary>
