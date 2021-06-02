@@ -22,6 +22,7 @@ using Microsoft.Extensions.Options;
 using Microsoft.OpenApi.Models;
 using Newtonsoft.Json.Serialization;
 using Abp.AspNetCore.SignalR.Hubs;
+using Hatra.Messenger.Web.Host.Hubs;
 
 namespace Hatra.Messenger.Web.Host.Startup
 {
@@ -154,6 +155,7 @@ namespace Hatra.Messenger.Web.Host.Startup
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapHub<AbpCommonHub>("/signalr");
+                endpoints.MapHub<ChatHub>("/chat-hub");
                 endpoints.MapControllerRoute("default", "{controller=Home}/{action=Index}/{id?}");
                 endpoints.MapControllerRoute("defaultWithArea", "{area}/{controller=Home}/{action=Index}/{id?}");
             });
@@ -171,14 +173,11 @@ namespace Hatra.Messenger.Web.Host.Startup
                 options.DisplayRequestDuration(); // Controls the display of the request duration (in milliseconds) for "Try it out" requests.  
             }); // URL: /swagger
 
+
+
             
 
-            //app.UseSignalR(routes =>
-            //{
-            //    routes.MapHub<AbpCommonHub>("/signalr");
-            //});
 
-           
         }
     }
 }
