@@ -23,7 +23,7 @@ namespace Hatra.Messenger.Web.Host.Hubs
 
         public async Task SendMessage(string message)
         {
-            await Clients.Others.SendAsync("getMessage", string.Format("User {0}: {1}", AbpSession.UserId, message));
+            await Clients.All.SendAsync("getMessage", string.Format("User {0}: {1}", AbpSession.UserId, message));
         }
 
         public override async Task OnConnectedAsync()

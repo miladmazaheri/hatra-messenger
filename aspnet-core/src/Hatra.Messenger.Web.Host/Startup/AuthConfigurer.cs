@@ -62,7 +62,7 @@ namespace Hatra.Messenger.Web.Host.Startup
                 return Task.CompletedTask;
             }
 
-            if (path.Value.StartsWith("/chat-hub"))
+            if (path.Value.ToLower().StartsWith("/chat-hub"))
             {
                 var accessToken = context.Request.Query["access_token"];
                 if (!string.IsNullOrEmpty(accessToken))
@@ -72,7 +72,7 @@ namespace Hatra.Messenger.Web.Host.Startup
                 return Task.CompletedTask;
             }
 
-            if (!path.Value.StartsWith("/signalr"))
+            if (!path.Value.ToLower().StartsWith("/signalr"))
             {
                 return Task.CompletedTask;
             }
