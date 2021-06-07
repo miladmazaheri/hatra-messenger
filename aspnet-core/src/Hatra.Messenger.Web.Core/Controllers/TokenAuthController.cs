@@ -163,7 +163,7 @@ namespace Hatra.Messenger.Controllers
         }
 
         [HttpPost]
-        public async Task<AuthenticateResultModel> Login(LoginModel model)
+        public async Task<AuthenticateResultModel> Login([FromBody]LoginModel model)
         {
             var user = await _userManager.FindByPhoneNumber(model.PhoneNumber);
 
