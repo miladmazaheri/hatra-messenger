@@ -1,15 +1,20 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Claims;
+using System.Text.Json;
 using System.Threading.Tasks;
 using Abp.Dependency;
 using Abp.Runtime.Session;
 using Castle.Core.Logging;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.SignalR;
 
 namespace Hatra.Messenger.Web.Host.Hubs
 {
-    public class ChatHub: Hub, ITransientDependency
+    //[Authorize(JwtBearerDefaults.AuthenticationScheme)]
+    public class ChatHub : Hub, ITransientDependency
     {
         public IAbpSession AbpSession { get; set; }
 
@@ -23,7 +28,8 @@ namespace Hatra.Messenger.Web.Host.Hubs
 
         public async Task SendMessage(string message)
         {
-            await Clients.All.SendAsync("getMessage", string.Format("User {0}: {1}", AbpSession.UserId, message));
+            var username = Context.User?.FindFirstValue(ClaimTypes.Name) ?? "unknown";
+            await Clients.All.SendAsync("getMessage", JsonSerializer.Serialize(new MessageModel(username, message)));
         }
 
         public override async Task OnConnectedAsync()
@@ -36,6 +42,23 @@ namespace Hatra.Messenger.Web.Host.Hubs
         {
             await base.OnDisconnectedAsync(exception);
             Logger.Debug("A client disconnected from MyChatHub: " + Context.ConnectionId);
+        }
+    }
+
+    public class MessageModel
+    {
+        public string Sender { get; set; }
+        public string Content { get; set; }
+
+        public MessageModel(string sender, string content)
+        {
+            Sender = sender;
+            Content = content;
+        }
+
+        public MessageModel()
+        {
+
         }
     }
 }

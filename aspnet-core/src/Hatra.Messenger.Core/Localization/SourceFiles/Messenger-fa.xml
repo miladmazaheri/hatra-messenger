@@ -120,6 +120,7 @@
     <text name="AppTitle">پیام رسان هاترا</text>
     <text name="UploadExcel">بارگذاری فایل اکسل</text>
     <text name="NotImplemented">این بخش در حال توسعه است</text>
-
+    <text name="SignalRConnectionTest">تست ارتباط بر خط</text>
+    <text name="Send">ارسال</text>
   </texts>
 </localizationDictionary>

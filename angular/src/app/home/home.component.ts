@@ -1,8 +1,9 @@
-import { Component, Injector, ChangeDetectionStrategy, OnInit, OnDestroy } from '@angular/core';
+import { Component, Injector, ChangeDetectionStrategy, OnInit, OnDestroy, ViewChild } from '@angular/core';
 import { AppComponentBase } from '@shared/app-component-base';
 import { appModuleAnimation } from '@shared/animations/routerTransition';
-import { SignalRService } from './signal-r.service'
+import { IMessageDto, MessageDto, SignalRService } from './signal-r.service'
 import { Subscription } from 'rxjs';
+import { NgControl } from '@angular/forms';
 @Component({
   templateUrl: './home.component.html',
   animations: [appModuleAnimation()],
@@ -15,12 +16,17 @@ export class HomeComponent extends AppComponentBase implements OnInit,OnDestroy 
   subscription:Subscription;
  
   messageText: string;
-  MesssagesData:string='';
+  MesssagesData:MessageDto[]=[];
   ngOnInit(): void {
+    
+  }
+
+  connectToHub(){
     this.signalRService.startConnection();
     this.subscription = this.signalRService.messageSource$.subscribe(x=>{
       if(x){
-        this.MesssagesData+=x+'\n'
+        x.IsSelf = this.appSession.user.userName == x.Sender;
+        this.MesssagesData.push(x);
       }
     });
   }

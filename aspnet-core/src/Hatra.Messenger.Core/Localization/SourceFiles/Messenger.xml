@@ -120,5 +120,7 @@
     <text name="AppTitle">Hatra Messenger</text>
     <text name="UploadExcel">Upload Excel File</text>
     <text name="NotImplemented">Not Implemented Yet!</text>
+    <text name="SignalRConnectionTest">SignalR Connection Test</text>
+    <text name="Send">Send</text>
   </texts>
 </localizationDictionary>

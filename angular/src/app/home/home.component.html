@@ -3,30 +3,131 @@
     <div class="container-fluid">
       <div class="row">
         <div class="col-12">
-          <h1>SignalR Connection Test</h1>
+          <h1>{{ "SignalRConnectionTest" | localize }}</h1>
+          <button (click)="connectToHub()" type="button" class="btn bg-green">{{ "Connect" | localize}}</button>
         </div>
       </div>
     </div>
   </section>
   <section class="content px-2">
     <div class="container-fluid">
-      <div class="row">
+      <!-- <div class="row">
         <div class="input-group">
 
           <input type="text" class="form-control" name="messageText" [(ngModel)]="messageText"
             (keyup.enter)="sendMessage()" />
           <div class="input-group-prepend">
             <button type="button" class="btn bg-blue" (click)="sendMessage()">
-              Send
+              {{ "Send" | localize }}
             </button>
           </div>
         </div>
-      </div>
-      <div class="row">
+      </div> -->
+      <!-- <div class="row">
+
         <div class="input-group pt-1">
-          <textarea class="form-control" style="height: 30rem;" readonly>{{MesssagesData}}</textarea>
+          
         </div>
+      </div> -->
+      <div class="card card-primary card-outline direct-chat direct-chat-primary">
+        <div class="card-header">
+          <h3 class="card-title">Direct Chat</h3>
+
+          <div class="card-tools">
+            <span title="3 New Messages" class="badge bg-primary">3</span>
+            <button type="button" class="btn btn-tool" data-card-widget="collapse">
+              <i class="fas fa-minus"></i>
+            </button>
+            <button type="button" class="btn btn-tool" title="Contacts" data-widget="chat-pane-toggle">
+              <i class="fas fa-comments"></i>
+            </button>
+            <button type="button" class="btn btn-tool" data-card-widget="remove">
+              <i class="fas fa-times"></i>
+            </button>
+          </div>
+        </div>
+        <!-- /.card-header -->
+        <div class="card-body">
+          <!-- Conversations are loaded here -->
+          <div class="direct-chat-messages">
+            <!-- Message. Default to the left -->
+            <ng-container *ngFor="let msg of MesssagesData">
+              <div *ngIf="msg.IsSelf" class="direct-chat-msg">
+                <div class="direct-chat-infos clearfix">
+                  <span class="direct-chat-name float-left">{{msg.Sender}}</span>
+                  <span class="direct-chat-timestamp float-right">23 Jan 2:00 pm</span>
+                </div>
+                <img class="direct-chat-img" src="../../assets/img/user.png">
+                <div class="direct-chat-text">
+                  {{msg.Content}}
+                </div>
+              </div>
+              <div *ngIf="!msg.IsSelf" class="direct-chat-msg right">
+                <div class="direct-chat-infos clearfix">
+                  <span class="direct-chat-name float-right">{{msg.Sender}}</span>
+                  <span class="direct-chat-timestamp float-left">23 Jan 2:00 pm</span>
+                </div>
+                <img class="direct-chat-img" src="../../assets/img/user.png">
+                <div class="direct-chat-text">
+                  {{msg.Content}}
+                </div>
+              </div>
+            </ng-container>
+
+            <!-- /.direct-chat-msg -->
+
+            <!-- <div class="direct-chat-msg right">
+              <div class="direct-chat-infos clearfix">
+                <span class="direct-chat-name float-right">Sarah Bullock</span>
+                <span class="direct-chat-timestamp float-left">23 Jan 2:05 pm</span>
+              </div>
+              <img class="direct-chat-img" src="../dist/img/user3-128x128.jpg" alt="Message User Image">
+              <div class="direct-chat-text">
+                You better believe it!
+              </div>
+            </div> -->
+          </div>
+
+          <!-- Contacts are loaded here -->
+          <div class="direct-chat-contacts">
+            <ul class="contacts-list">
+              <li>
+                <a href="#">
+                  <img class="contacts-list-img" src="../dist/img/user1-128x128.jpg" alt="User Avatar">
+
+                  <div class="contacts-list-info">
+                    <span class="contacts-list-name">
+                      Count Dracula
+                      <small class="contacts-list-date float-right">2/28/2015</small>
+                    </span>
+                    <span class="contacts-list-msg">How have you been? I was...</span>
+                  </div>
+                  <!-- /.contacts-list-info -->
+                </a>
+              </li>
+              <!-- End Contact Item -->
+            </ul>
+            <!-- /.contatcts-list -->
+          </div>
+          <!-- /.direct-chat-pane -->
+        </div>
+        <!-- /.card-body -->
+        <div class="card-footer">
+          <form action="#" method="post">
+            <div class="input-group">
+              <input type="text" name="message" placeholder="Type Message ..." class="form-control"
+                [(ngModel)]="messageText" (keyup.enter)="sendMessage()">
+              <span class="input-group-append">
+                <button type="button" class="btn btn-primary" (click)="sendMessage()">
+                  {{ "Send" | localize }}
+                </button>
+              </span>
+            </div>
+          </form>
+        </div>
+        <!-- /.card-footer-->
       </div>
     </div>
+
   </section>
 </div>

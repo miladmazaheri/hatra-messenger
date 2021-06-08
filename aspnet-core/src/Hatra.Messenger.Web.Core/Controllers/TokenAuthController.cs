@@ -163,7 +163,7 @@ namespace Hatra.Messenger.Controllers
         }
 
         [HttpPost]
-        public async Task<AuthenticateResultModel> Login([FromBody]LoginModel model)
+        public async Task<AuthenticateResultModel> Login([FromBody] LoginModel model)
         {
             var user = await _userManager.FindByPhoneNumber(model.PhoneNumber);
 
@@ -181,14 +181,15 @@ namespace Hatra.Messenger.Controllers
             await _userManager.UpdateSecurityStampAsync(user);
 
             await _signInManager.SignInAsync(user, true);
-            
-            var accessToken = CreateAccessToken(CreateJwtClaims(user));
+
+            var accessToken = CreateAccessToken(await CreateJwtClaimsAsync(user));
 
             return new AuthenticateResultModel
             {
                 AccessToken = accessToken,
                 EncryptedAccessToken = GetEncryptedAccessToken(accessToken),
                 ExpireInSeconds = (int)_configuration.Expiration.TotalSeconds,
+                UserId = user.Id
             };
 
         }
@@ -285,17 +286,28 @@ namespace Hatra.Messenger.Controllers
             return claims;
         }
 
-        private static List<Claim> CreateJwtClaims(User user)
+        private async Task<List<Claim>> CreateJwtClaimsAsync(User user)
         {
             var claims = new List<Claim>();
-
+            var roles = await _userManager.GetRolesAsync(user);
             claims.AddRange(new[]
             {
+                new Claim(ClaimTypes.NameIdentifier,user.Id.ToString()),
+                new Claim(ClaimTypes.Name,user.UserName),
+                new Claim(ClaimTypes.Email,user.EmailAddress),
+                new Claim("AspNet.Identity.SecurityStamp",user.SecurityStamp),
                 new Claim(JwtRegisteredClaimNames.Sub, user.Id.ToString()),
                 new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
                 new Claim(JwtRegisteredClaimNames.Iat, DateTimeOffset.Now.ToUnixTimeSeconds().ToString(), ClaimValueTypes.Integer64)
             });
-
+            if (user.TenantId.HasValue)
+            {
+                claims.Add(new Claim("http://www.aspnetboilerplate.com/identity/claims/tenantId", user.TenantId.ToString()));
+            }
+            if (roles != null && roles.Any())
+            {
+                claims.AddRange(roles.Select(role => new Claim(ClaimTypes.Role, role)));
+            }
             return claims;
         }
 

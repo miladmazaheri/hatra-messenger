@@ -10,7 +10,7 @@ import { BehaviorSubject } from 'rxjs';
 export class SignalRService {
 
   private hubConnection: signalR.HubConnection
-  private _messageSource = new BehaviorSubject<string>('');
+  private _messageSource = new BehaviorSubject<MessageDto>(null);
   messageSource$ = this._messageSource.asObservable();
 
   public startConnection = () => {
@@ -22,7 +22,7 @@ export class SignalRService {
     };
     this.hubConnection = new signalR.HubConnectionBuilder()
       .configureLogging(signalR.LogLevel.Information)
-      .withUrl(AppConsts.remoteServiceBaseUrl + '/chat-hub',{ accessTokenFactory: () => authToken })
+      .withUrl(AppConsts.remoteServiceBaseUrl + '/chat-hub', { accessTokenFactory: () => authToken })
       // .withUrl(AppConsts.appBaseUrl + '/chat-hub', options)
       .build();
     this.hubConnection
@@ -37,14 +37,34 @@ export class SignalRService {
   private initialListeners() {
     this.hubConnection.on('getMessage', (data) => {
       console.log(data);
-      this._messageSource.next(data);
+      this._messageSource.next(MessageDto.fromJS(data));
     });
-
-
     console.log('Listeners Initialized!');
   }
 
   public sendMessage = (message: any) => {
     this.hubConnection.invoke("SendMessage", message)
+  }
+}
+
+
+export interface IMessageDto {
+  Sender: string | undefined;
+  Content: string | undefined;
+  IsSelf:boolean |false;
+}
+export class MessageDto implements IMessageDto {
+  Sender: string;
+  Content: string;
+  IsSelf:boolean;
+  MessageDto(obj:IMessageDto) {
+    this.Sender = obj.Sender;
+    this.Content = obj.Content;
+  }
+
+
+  static fromJS(jsonStr: string): MessageDto {
+    var obj = JSON.parse(jsonStr) as MessageDto;
+    return obj;
   }
 }

@@ -1,6 +1,6 @@
 {
-  "remoteServiceBaseUrl": "http://5.253.25.216:21021",
-  "appBaseUrl": "http://5.253.25.216",
+  "remoteServiceBaseUrl": "https://api.uy6.ir",
+  "appBaseUrl": "https://uy6.ir",
   "localeMappings": [
     {
       "from": "pt-BR",
