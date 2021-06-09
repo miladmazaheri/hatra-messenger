@@ -10,6 +10,7 @@ namespace Hatra.Messenger.Authorization.Users
     {
         public const string DefaultPassword = "123qwe";
 
+        public virtual ICollection<RefreshToken> RefreshTokens { get; set; }
         
         public static string CreateRandomPassword()
         {

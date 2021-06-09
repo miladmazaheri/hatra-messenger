@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Hatra.Messenger.Authorization.Users;
 using Hatra.Messenger.Chats.Entities;
 using Microsoft.EntityFrameworkCore;
 
@@ -12,6 +13,13 @@ namespace Hatra.Messenger.Chats
     {
         public static void ConfigureChat(this ModelBuilder builder)
         {
+            builder.Entity<RefreshToken>().Property(x => x.Token).IsRequired();
+            builder.Entity<RefreshToken>().Property(x => x.CreatedByIp).HasMaxLength(20).IsRequired();
+            builder.Entity<RefreshToken>().Property(x => x.Device).HasMaxLength(50).IsRequired();
+            builder.Entity<RefreshToken>().HasOne(x => x.User).WithMany(x=>x.RefreshTokens).HasForeignKey(x => x.UserId).IsRequired()
+                .OnDelete(DeleteBehavior.Cascade);
+            builder.Entity<RefreshToken>().HasIndex(x => new {x.Token, x.Device, x.Expires}).IsUnique();
+
             builder.Entity<Chat>().Property(x => x.Title).HasMaxLength(50).IsRequired(false);
 
             builder.Entity<ChatParticipant>().HasKey(c => new { c.UserId, c.ChatId});

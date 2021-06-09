@@ -14,5 +14,7 @@ namespace Hatra.Messenger.Authentication.JwtBearer
         public SigningCredentials SigningCredentials { get; set; }
 
         public TimeSpan Expiration { get; set; }
+
+        public TimeSpan RefreshExpiration { get; set; }
     }
 }

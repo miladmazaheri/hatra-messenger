@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Linq.Dynamic.Core;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Identity;
@@ -61,6 +62,17 @@ namespace Hatra.Messenger.Authorization.Users
         public Task<User> FindByPhoneNumber(string phoneNumber)
         {
             return Users.FirstOrDefaultAsync(x => x.PhoneNumber == phoneNumber);
+        }
+
+        public Task<User> GetUserByRefreshTokenAsync(string token, string device, string ip)
+        {
+            return Users.Include(x => x.RefreshTokens)
+                .FirstOrDefaultAsync(x =>
+                    x.RefreshTokens.Any(r =>
+                        r.Token == token &&
+                        r.Device == device &&
+                        r.CreatedByIp == ip &&
+                        r.Expires >= DateTime.Now));
         }
     }
 }

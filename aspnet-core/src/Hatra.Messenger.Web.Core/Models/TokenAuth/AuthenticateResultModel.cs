@@ -9,5 +9,10 @@
         public int ExpireInSeconds { get; set; }
 
         public long UserId { get; set; }
+
+        public string RefreshToken { get; set; }
+
+        public int RefreshExpireInSeconds { get; set; }
+
     }
 }

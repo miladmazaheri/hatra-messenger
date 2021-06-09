@@ -37,4 +37,10 @@ namespace Hatra.Messenger.Models.TokenAuth
             Message = message;
         }
     }
+
+    public class RefreshRequest
+    {
+        public string AccessToken { get; set; }
+        public string RefreshToken { get; set; }
+    }
 }

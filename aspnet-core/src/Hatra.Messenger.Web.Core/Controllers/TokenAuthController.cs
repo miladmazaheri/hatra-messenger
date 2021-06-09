@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IdentityModel.Tokens.Jwt;
 using System.Linq;
 using System.Security.Claims;
+using System.Security.Cryptography;
 using System.Threading.Tasks;
 using Abp.Application.Services;
 using Microsoft.AspNetCore.Identity;
@@ -20,6 +21,7 @@ using Hatra.Messenger.Identity;
 using Hatra.Messenger.Models.TokenAuth;
 using Hatra.Messenger.MultiTenancy;
 using Hatra.Messenger.SMS;
+using Microsoft.IdentityModel.Tokens;
 
 namespace Hatra.Messenger.Controllers
 {
@@ -68,13 +70,15 @@ namespace Hatra.Messenger.Controllers
             );
 
             var accessToken = CreateAccessToken(CreateJwtClaims(loginResult.Identity));
-
+            var refreshToken = CreateRefreshToken();
             return new AuthenticateResultModel
             {
                 AccessToken = accessToken,
                 EncryptedAccessToken = GetEncryptedAccessToken(accessToken),
                 ExpireInSeconds = (int)_configuration.Expiration.TotalSeconds,
-                UserId = loginResult.User.Id
+                RefreshExpireInSeconds = (int)_configuration.RefreshExpiration.TotalSeconds,
+                UserId = loginResult.User.Id,
+                RefreshToken = refreshToken
             };
         }
 
@@ -183,17 +187,81 @@ namespace Hatra.Messenger.Controllers
             await _signInManager.SignInAsync(user, true);
 
             var accessToken = CreateAccessToken(await CreateJwtClaimsAsync(user));
-
+            var refreshToken = CreateRefreshToken();
             return new AuthenticateResultModel
             {
                 AccessToken = accessToken,
                 EncryptedAccessToken = GetEncryptedAccessToken(accessToken),
                 ExpireInSeconds = (int)_configuration.Expiration.TotalSeconds,
-                UserId = user.Id
+                RefreshExpireInSeconds = (int)_configuration.RefreshExpiration.TotalSeconds,
+                UserId = user.Id,
+                RefreshToken = refreshToken
             };
 
         }
 
+        [HttpPost]
+        public async Task<ActionResult<AuthenticateResultModel>> Refresh([FromBody] RefreshRequest request)
+        {
+            if (!IsValidToken(request.AccessToken))
+            {
+                return BadRequest();
+            }
+
+            var user = await _userManager.GetUserByRefreshTokenAsync(request.RefreshToken, GetDevice(), GetIpAddress());
+
+            await _userManager.UpdateSecurityStampAsync(user);
+
+            await _signInManager.SignInAsync(user, true);
+
+            var accessToken = CreateAccessToken(await CreateJwtClaimsAsync(user));
+            //TODO Insert RefreshToken To Database
+            var refreshToken = CreateRefreshToken(user.Id);
+            return new AuthenticateResultModel
+            {
+                AccessToken = accessToken,
+                EncryptedAccessToken = GetEncryptedAccessToken(accessToken),
+                ExpireInSeconds = (int)_configuration.Expiration.TotalSeconds,
+                RefreshExpireInSeconds = (int)_configuration.RefreshExpiration.TotalSeconds,
+                UserId = user.Id,
+                RefreshToken = refreshToken
+            };
+
+        }
+
+        private string GetIpAddress()
+        {
+            if (Request.Headers.ContainsKey("X-Forwarded-For"))
+                return Request.Headers["X-Forwarded-For"];
+            if (HttpContext.Connection.RemoteIpAddress != null)
+                return HttpContext.Connection.RemoteIpAddress.MapToIPv4().ToString();
+            return ":::0";
+        }
+        private string GetDevice()
+        {
+            if (Request.Headers.ContainsKey("X-Device"))
+                return Request.Headers["X-Device"];
+            return "-";
+        }
+
+        private bool IsValidToken(string token)
+        {
+            try
+            {
+                new JwtSecurityTokenHandler().ValidateToken(token, new TokenValidationParameters
+                {
+                    ValidateIssuerSigningKey = true,
+                    ValidateIssuer = false,
+                    ValidateAudience = false,
+                    IssuerSigningKey = _configuration.SigningCredentials.Key
+                }, out SecurityToken validatedToken);
+                return true;
+            }
+            catch
+            {
+                return false;
+            }
+        }
 
         private async Task<User> RegisterExternalUserAsync(ExternalAuthUserInfo externalUser)
         {
@@ -265,6 +333,20 @@ namespace Hatra.Messenger.Controllers
                 claims: claims,
                 notBefore: now,
                 expires: now.Add(expiration ?? _configuration.Expiration),
+                signingCredentials: _configuration.SigningCredentials
+            );
+            return new JwtSecurityTokenHandler().WriteToken(jwtSecurityToken);
+        }
+
+        private string CreateRefreshToken()
+        {
+            var now = DateTime.UtcNow;
+
+            var jwtSecurityToken = new JwtSecurityToken(
+                issuer: _configuration.Issuer,
+                audience: _configuration.Audience,
+                notBefore: now,
+                expires: now.Add(_configuration.RefreshExpiration),
                 signingCredentials: _configuration.SigningCredentials
             );
 
