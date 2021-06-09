@@ -1,8 +1,6 @@
-using System.Threading.Tasks;
 using Abp.Web.Security.AntiForgery;
 using Microsoft.AspNetCore.Antiforgery;
 using Hatra.Messenger.Controllers;
-using Microsoft.AspNetCore.Mvc;
 
 namespace Hatra.Messenger.Web.Host.Controllers
 {

@@ -21,7 +21,6 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Options;
 using Microsoft.OpenApi.Models;
 using Newtonsoft.Json.Serialization;
-using Abp.AspNetCore.SignalR.Hubs;
 using Hatra.Messenger.Web.Host.Hubs;
 using Swashbuckle.AspNetCore.SwaggerUI;
 
@@ -136,7 +135,7 @@ namespace Hatra.Messenger.Web.Host.Startup
             );
         }
 
-        public void Configure(IApplicationBuilder app,  ILoggerFactory loggerFactory)
+        public void Configure(IApplicationBuilder app, ILoggerFactory loggerFactory)
         {
 
 
@@ -152,7 +151,7 @@ namespace Hatra.Messenger.Web.Host.Startup
 
             app.UseAbpRequestLocalization();
 
-          
+
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapHub<AbpCommonHub>("/signalr");
@@ -180,9 +179,9 @@ namespace Hatra.Messenger.Web.Host.Startup
 
 
 
-            
 
 
         }
     }
+   
 }
