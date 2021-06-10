@@ -66,7 +66,7 @@ namespace Hatra.Messenger.Authorization.Users
 
         public Task<User> GetUserByRefreshTokenAsync(string token, string device, string ip)
         {
-            return Users.Include(x => x.RefreshTokens)
+            return Users
                 .FirstOrDefaultAsync(x =>
                     x.RefreshTokens.Any(r =>
                         r.Token == token &&
@@ -74,5 +74,11 @@ namespace Hatra.Messenger.Authorization.Users
                         r.CreatedByIp == ip &&
                         r.Expires >= DateTime.Now));
         }
+
+        public Task InsertOrUpdateRefreshToken(long userId, string token, string device, string ip)
+        {
+            return Task.CompletedTask;
+        }
+
     }
 }

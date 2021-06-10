@@ -17,6 +17,7 @@ using Hatra.Messenger.Authentication.External;
 using Hatra.Messenger.Authentication.JwtBearer;
 using Hatra.Messenger.Authorization;
 using Hatra.Messenger.Authorization.Users;
+using Hatra.Messenger.EntityFrameworkCore.Repositories;
 using Hatra.Messenger.Identity;
 using Hatra.Messenger.Models.TokenAuth;
 using Hatra.Messenger.MultiTenancy;
@@ -38,7 +39,7 @@ namespace Hatra.Messenger.Controllers
         private readonly ISmsAppService _smsAppService;
         private readonly UserManager _userManager;
         private readonly SignInManager _signInManager;
-
+        private readonly IRefreshTokenRepository _refreshTokenRepository;
         public TokenAuthController(
             LogInManager logInManager,
             ITenantCache tenantCache,
@@ -46,7 +47,7 @@ namespace Hatra.Messenger.Controllers
             TokenAuthConfiguration configuration,
             IExternalAuthConfiguration externalAuthConfiguration,
             IExternalAuthManager externalAuthManager,
-            UserRegistrationManager userRegistrationManager, ISmsAppService smsAppService, UserManager userManager, SignInManager signInManager)
+            UserRegistrationManager userRegistrationManager, ISmsAppService smsAppService, UserManager userManager, SignInManager signInManager, IRefreshTokenRepository refreshTokenRepository)
         {
             _logInManager = logInManager;
             _tenantCache = tenantCache;
@@ -58,6 +59,7 @@ namespace Hatra.Messenger.Controllers
             _smsAppService = smsAppService;
             _userManager = userManager;
             _signInManager = signInManager;
+            _refreshTokenRepository = refreshTokenRepository;
         }
 
         [HttpPost]
@@ -68,9 +70,10 @@ namespace Hatra.Messenger.Controllers
                 model.Password,
                 GetTenancyNameOrNull()
             );
-
+            var device = GetDevice();
+            var ip = GetIpAddress();
             var accessToken = CreateAccessToken(CreateJwtClaims(loginResult.Identity));
-            var refreshToken = CreateRefreshToken();
+            var refreshToken =await CreateRefreshTokenAsync(loginResult.User.Id,device,ip);
             return new AuthenticateResultModel
             {
                 AccessToken = accessToken,
@@ -186,8 +189,10 @@ namespace Hatra.Messenger.Controllers
 
             await _signInManager.SignInAsync(user, true);
 
+            var device = GetDevice();
+            var ip = GetIpAddress();
             var accessToken = CreateAccessToken(await CreateJwtClaimsAsync(user));
-            var refreshToken = CreateRefreshToken();
+            var refreshToken =await CreateRefreshTokenAsync(user.Id,device,ip);
             return new AuthenticateResultModel
             {
                 AccessToken = accessToken,
@@ -208,15 +213,19 @@ namespace Hatra.Messenger.Controllers
                 return BadRequest();
             }
 
-            var user = await _userManager.GetUserByRefreshTokenAsync(request.RefreshToken, GetDevice(), GetIpAddress());
-
+            var device = GetDevice();
+            var ip = GetIpAddress();
+            var user = await _userManager.GetUserByRefreshTokenAsync(request.RefreshToken, device,ip);
+            if (user == null)
+            {
+                return Unauthorized();
+            }
             await _userManager.UpdateSecurityStampAsync(user);
 
             await _signInManager.SignInAsync(user, true);
 
             var accessToken = CreateAccessToken(await CreateJwtClaimsAsync(user));
-            //TODO Insert RefreshToken To Database
-            var refreshToken = CreateRefreshToken(user.Id);
+            var refreshToken =await CreateRefreshTokenAsync(user.Id,device,ip);
             return new AuthenticateResultModel
             {
                 AccessToken = accessToken,
@@ -338,19 +347,20 @@ namespace Hatra.Messenger.Controllers
             return new JwtSecurityTokenHandler().WriteToken(jwtSecurityToken);
         }
 
-        private string CreateRefreshToken()
+        private async Task<string> CreateRefreshTokenAsync(long userId,string device,string ip)
         {
             var now = DateTime.UtcNow;
-
+            var exp = now.Add(_configuration.RefreshExpiration);
             var jwtSecurityToken = new JwtSecurityToken(
                 issuer: _configuration.Issuer,
                 audience: _configuration.Audience,
                 notBefore: now,
-                expires: now.Add(_configuration.RefreshExpiration),
+                expires:exp,
                 signingCredentials: _configuration.SigningCredentials
             );
-
-            return new JwtSecurityTokenHandler().WriteToken(jwtSecurityToken);
+            var token = new JwtSecurityTokenHandler().WriteToken(jwtSecurityToken);
+            await _refreshTokenRepository.InsertOrUpdateAsync(userId, token, ip, device, exp);
+            return token;
         }
 
         private static List<Claim> CreateJwtClaims(ClaimsIdentity identity)
