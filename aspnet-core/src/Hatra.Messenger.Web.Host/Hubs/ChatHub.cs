@@ -1,7 +1,9 @@
 ﻿using System;
+using System.Collections.Concurrent;
 using System.Security.Claims;
 using System.Text.Json;
 using System.Threading.Tasks;
+using Abp.AspNetCore.SignalR.Hubs;
 using Abp.Dependency;
 using Abp.Runtime.Session;
 using Castle.Core.Logging;
@@ -12,14 +14,10 @@ namespace Hatra.Messenger.Web.Host.Hubs
     //[Authorize(JwtBearerDefaults.AuthenticationScheme)]
     public class ChatHub : Hub, ITransientDependency
     {
-        public IAbpSession AbpSession { get; set; }
-
-        public ILogger Logger { get; set; }
+        public static readonly ConcurrentDictionary<long, string> OnlineUsers = new ConcurrentDictionary<long, string>();
 
         public ChatHub()
         {
-            AbpSession = NullAbpSession.Instance;
-            Logger = NullLogger.Instance;
         }
 
         public async Task SendMessage(string message)
@@ -30,14 +28,14 @@ namespace Hatra.Messenger.Web.Host.Hubs
 
         public override async Task OnConnectedAsync()
         {
+            OnlineUsers.GetOrAdd(Context.GetUserId(), x => Context.ConnectionId);
             await base.OnConnectedAsync();
-            Logger.Debug("A client connected to MyChatHub: " + Context.ConnectionId);
         }
 
         public override async Task OnDisconnectedAsync(Exception exception)
         {
+            OnlineUsers.TryRemove(Context.GetUserId(), out var res);
             await base.OnDisconnectedAsync(exception);
-            Logger.Debug("A client disconnected from MyChatHub: " + Context.ConnectionId);
         }
     }
 
