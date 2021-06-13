@@ -14,6 +14,11 @@
     <PackageReference Include="KavenegarDotNetCore" Version="1.0.3" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\..\Hatra.Messenger.Common\Hatra.Messenger.Common.csproj" />
     <ProjectReference Include="..\Hatra.Messenger.Core\Hatra.Messenger.Core.csproj" />
+    <ProjectReference Include="..\Hatra.Messenger.EntityFrameworkCore\Hatra.Messenger.EntityFrameworkCore.csproj" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Chat\Dto\" />
   </ItemGroup>
 </Project>

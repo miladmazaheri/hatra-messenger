@@ -26,6 +26,7 @@ namespace Hatra.Messenger.Chats
             builder.Entity<ChatParticipant>().HasOne(x => x.Chat).WithMany(x=>x.Participants).HasForeignKey(x => x.ChatId).IsRequired().OnDelete(DeleteBehavior.Restrict);
             builder.Entity<ChatParticipant>().HasOne(x => x.User).WithMany().HasForeignKey(x => x.UserId).IsRequired().OnDelete(DeleteBehavior.Restrict);
             builder.Entity<ChatParticipant>().Property(x => x.Setting).IsRequired(false);
+            builder.Entity<ChatParticipant>().Property(x => x.Title).HasMaxLength(50).IsRequired();
 
             builder.Entity<ChatContent>().Property(x => x.Text).IsRequired(false);
             builder.Entity<ChatContent>().Property(x => x.ThumbnailAddress).IsRequired(false);

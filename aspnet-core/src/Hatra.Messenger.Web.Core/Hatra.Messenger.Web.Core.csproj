@@ -19,7 +19,6 @@
   </PropertyGroup>
   <ItemGroup>
     <ProjectReference Include="..\Hatra.Messenger.Application\Hatra.Messenger.Application.csproj" />
-    <ProjectReference Include="..\Hatra.Messenger.EntityFrameworkCore\Hatra.Messenger.EntityFrameworkCore.csproj" />
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="DNTPersianUtils.Core" Version="4.3.0" />

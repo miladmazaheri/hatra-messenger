@@ -10,7 +10,8 @@ namespace Hatra.Messenger.Chats.Entities
     {
         public virtual long UserId { get; set; }
         public virtual User User { get; set; }
-
+        public virtual string Title { get; set; }
+        public virtual Guid? LogoMediaId { get; set; }
         public virtual Guid ChatId { get; set; }
         public virtual Chat Chat { get; set; }
 

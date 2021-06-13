@@ -215,7 +215,7 @@ namespace Hatra.Messenger.Controllers
 
             var device = GetDevice();
             var ip = GetIpAddress();
-            var user = await _userManager.GetUserByRefreshTokenAsync(request.RefreshToken, device,ip);
+            var user = await _userManager.GetByRefreshTokenAsync(request.RefreshToken, device,ip);
             if (user == null)
             {
                 return Unauthorized();

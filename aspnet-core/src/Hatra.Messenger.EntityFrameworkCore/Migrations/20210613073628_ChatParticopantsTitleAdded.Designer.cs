@@ -4,14 +4,16 @@ using Hatra.Messenger.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace Hatra.Messenger.Migrations
 {
     [DbContext(typeof(MessengerDbContext))]
-    partial class MessengerDbContextModelSnapshot : ModelSnapshot
+    [Migration("20210613073628_ChatParticopantsTitleAdded")]
+    partial class ChatParticopantsTitleAdded
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -1719,9 +1721,6 @@ namespace Hatra.Messenger.Migrations
 
                     b.Property<long?>("LastModifierUserId")
                         .HasColumnType("bigint");
-
-                    b.Property<Guid?>("LogoMediaId")
-                        .HasColumnType("uniqueidentifier");
 
                     b.Property<string>("Setting")
                         .HasColumnType("nvarchar(max)");

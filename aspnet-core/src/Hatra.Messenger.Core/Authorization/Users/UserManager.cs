@@ -64,7 +64,7 @@ namespace Hatra.Messenger.Authorization.Users
             return Users.FirstOrDefaultAsync(x => x.PhoneNumber == phoneNumber);
         }
 
-        public Task<User> GetUserByRefreshTokenAsync(string token, string device, string ip)
+        public Task<User> GetByRefreshTokenAsync(string token, string device, string ip)
         {
             return Users
                 .FirstOrDefaultAsync(x =>
@@ -75,10 +75,12 @@ namespace Hatra.Messenger.Authorization.Users
                         r.Expires >= DateTime.Now));
         }
 
-        public Task InsertOrUpdateRefreshToken(long userId, string token, string device, string ip)
+        public async Task<User> GetByUsernameAsync(string username)
         {
-            return Task.CompletedTask;
+            if (string.IsNullOrWhiteSpace(username)) return null;
+            return await Users.FirstOrDefaultAsync(x => x.NormalizedUserName == username.ToUpperInvariant());
         }
+        
 
     }
 }
