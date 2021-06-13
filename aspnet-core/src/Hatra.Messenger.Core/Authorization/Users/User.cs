@@ -10,6 +10,8 @@ namespace Hatra.Messenger.Authorization.Users
     {
         public const string DefaultPassword = "123qwe";
 
+        public Guid? AvatarMediaId { get; set; }
+
         public virtual ICollection<RefreshToken> RefreshTokens { get; set; }
         
         public static string CreateRandomPassword()

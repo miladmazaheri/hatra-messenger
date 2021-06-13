@@ -19,9 +19,14 @@ namespace Hatra.Messenger.Chat
             _chatRepository = chatRepository;
         }
 
-        public async Task<List<ChatListItemDto>> GetChatHistoryAsync(long userId)
+        public  Task<List<ChatListItemWithLastContentDto>> GetChatHistoryAsync(long userId)
         {
-            return await _chatRepository.GetChatHistoryAsync(userId);
+            return _chatRepository.GetChatHistoryAsync(userId);
+        }
+
+        public Task<ChatListItemDto> StartPrivateChatAsync(long userId, long userReceiverId)
+        {
+            return _chatRepository.StartPrivateChatAsync(userId,userReceiverId);
         }
     }
 }

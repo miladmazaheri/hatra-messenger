@@ -10,6 +10,7 @@ namespace Hatra.Messenger.Chat
 {
     public interface IChatAppService :IApplicationService
     {
-        Task<List<ChatListItemDto>> GetChatHistoryAsync(long userId);
+        Task<List<ChatListItemWithLastContentDto>> GetChatHistoryAsync(long userId);
+        Task<ChatListItemDto> StartPrivateChatAsync(long userId, long userReceiverId);
     }
 }

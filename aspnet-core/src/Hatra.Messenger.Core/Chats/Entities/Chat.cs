@@ -10,6 +10,10 @@ namespace Hatra.Messenger.Chats.Entities
 {
     public class Chat : Entity<Guid>, IFullAudited<User>
     {
+        public Chat()
+        {
+            Participants = new HashSet<ChatParticipant>();
+        }
         public virtual string Title { get; set; }
         public virtual ChatType ChatType { get; set; }
         public virtual Guid? LogoMediaId { get; set; }

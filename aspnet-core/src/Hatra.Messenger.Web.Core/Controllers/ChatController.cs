@@ -7,6 +7,7 @@ using Abp.Authorization;
 using Abp.Runtime.Security;
 using Hatra.Messenger.Chat;
 using Hatra.Messenger.Common.DataTransferObjects;
+using Hatra.Messenger.Models.Chat;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Hatra.Messenger.Controllers
@@ -24,10 +25,17 @@ namespace Hatra.Messenger.Controllers
         }
 
         [HttpGet]
-        public async Task<ActionResult<List<ChatListItemDto>>> GetChatHistory()
+        public async Task<ActionResult<List<ChatListItemWithLastContentDto>>> GetChatHistory()
         {
             var userId = User.Identity.GetUserId().Value;
-            return new ActionResult<List<ChatListItemDto>>(await _chatAppService.GetChatHistoryAsync(userId));
+            return new ActionResult<List<ChatListItemWithLastContentDto>>(await _chatAppService.GetChatHistoryAsync(userId));
+        }
+
+        [HttpPost]
+        public async Task<ActionResult<ChatListItemDto>> StartPrivateChat([FromBody] StartPrivateChatModel model)
+        {
+            var userId = User.Identity.GetUserId().Value;
+            return new ActionResult<ChatListItemDto>(await _chatAppService.StartPrivateChatAsync(userId,model.ReceiverId));
         }
     }
 }
