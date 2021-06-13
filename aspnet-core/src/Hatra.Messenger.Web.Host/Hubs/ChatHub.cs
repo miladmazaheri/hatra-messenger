@@ -4,6 +4,7 @@ using System.Security.Claims;
 using System.Text.Json;
 using System.Threading.Tasks;
 using Abp.AspNetCore.SignalR.Hubs;
+using Abp.Authorization;
 using Abp.Dependency;
 using Abp.Runtime.Session;
 using Castle.Core.Logging;
@@ -11,7 +12,7 @@ using Microsoft.AspNetCore.SignalR;
 
 namespace Hatra.Messenger.Web.Host.Hubs
 {
-    //[Authorize(JwtBearerDefaults.AuthenticationScheme)]
+    [AbpAuthorize]
     public class ChatHub : Hub, ITransientDependency
     {
         public static readonly ConcurrentDictionary<long, string> OnlineUsers = new ConcurrentDictionary<long, string>();
