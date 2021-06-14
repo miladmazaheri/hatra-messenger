@@ -12,9 +12,9 @@ namespace Hatra.Messenger.Web.Host.Hubs
         private static string PrivateMessage = "PrivateMessage";
 
 
-        public static async Task PushUploadProgressPercentAsync(this IClientProxy proxy, Guid mediaId, int percent)
+        public static async Task PushUploadProgressPercentAsync(this IClientProxy proxy, string uploadKey, int percent)
         {
-            await proxy.SendAsync(UploadProgressPercent, mediaId, percent);
+            await proxy.SendAsync(UploadProgressPercent, uploadKey, percent);
         }
         public static async Task SendPrivateMessageAsync(this IClientProxy proxy,string message)
         {

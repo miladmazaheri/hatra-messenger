@@ -16,6 +16,7 @@ using Hatra.Messenger.Identity;
 using Abp.AspNetCore.SignalR.Hubs;
 using Abp.Dependency;
 using Abp.Json;
+using Hatra.Messenger.SettingModels;
 using Hatra.Messenger.SMS;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Options;
@@ -118,6 +119,10 @@ namespace Hatra.Messenger.Web.Host.Startup
             services
                 .Configure<KavenegarSetting>(_appConfiguration.GetSection("Kavenegar"))
                 .AddSingleton(sp => sp.GetRequiredService<IOptions<KavenegarSetting>>().Value);
+
+            services
+                .Configure<UploadSetting>(_appConfiguration.GetSection("UploadSetting"))
+                .AddSingleton(sp => sp.GetRequiredService<IOptions<UploadSetting>>().Value);
 
 
             services.AddSignalR();

@@ -12,8 +12,6 @@ namespace Hatra.Messenger.Models.File
     {
         [Required]
         public IFormFile File { get; set; }
-        [Required]
-        public Guid MediaId { get; set; }
     }
 
     public class UploadResultModel
