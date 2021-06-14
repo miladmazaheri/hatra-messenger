@@ -15,4 +15,27 @@ namespace Hatra.Messenger.Models.File
         [Required]
         public Guid MediaId { get; set; }
     }
+
+    public class UploadResultModel
+    {
+        public string FileName { get; set; }
+        public string ThumbnailName { get; set; }
+
+        public UploadResultModel()
+        {
+
+        }
+
+        public UploadResultModel(string fileName)
+        {
+            FileName = fileName;
+        }
+
+        public UploadResultModel(string fileName, string thumbnailName) : this(fileName)
+        {
+            ThumbnailName = thumbnailName;
+        }
+
+
+    }
 }
