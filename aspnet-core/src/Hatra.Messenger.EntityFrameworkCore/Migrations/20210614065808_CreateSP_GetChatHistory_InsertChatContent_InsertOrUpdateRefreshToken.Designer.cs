@@ -10,8 +10,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Hatra.Messenger.Migrations
 {
     [DbContext(typeof(MessengerDbContext))]
-    [Migration("20210602073942_ChatEntitesAdded")]
-    partial class ChatEntitesAdded
+    [Migration("20210614065808_CreateSP_GetChatHistory_InsertChatContent_InsertOrUpdateRefreshToken")]
+    partial class CreateSP_GetChatHistory_InsertChatContent_InsertOrUpdateRefreshToken
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -1402,6 +1402,46 @@ namespace Hatra.Messenger.Migrations
                     b.ToTable("AbpRoles");
                 });
 
+            modelBuilder.Entity("Hatra.Messenger.Authorization.Users.RefreshToken", b =>
+                {
+                    b.Property<long>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bigint")
+                        .UseIdentityColumn();
+
+                    b.Property<string>("CreatedByIp")
+                        .IsRequired()
+                        .HasMaxLength(20)
+                        .HasColumnType("nvarchar(20)");
+
+                    b.Property<DateTime>("CreationTime")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Device")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.Property<DateTime>("Expires")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Token")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<long>("UserId")
+                        .HasColumnType("bigint");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("UserId");
+
+                    b.HasIndex("Token", "Device", "Expires")
+                        .IsUnique();
+
+                    b.ToTable("RefreshTokens");
+                });
+
             modelBuilder.Entity("Hatra.Messenger.Authorization.Users.User", b =>
                 {
                     b.Property<long>("Id")
@@ -1415,6 +1455,9 @@ namespace Hatra.Messenger.Migrations
                     b.Property<string>("AuthenticationSource")
                         .HasMaxLength(64)
                         .HasColumnType("nvarchar(64)");
+
+                    b.Property<string>("AvatarAddress")
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("ConcurrencyStamp")
                         .IsConcurrencyToken()
@@ -1559,8 +1602,8 @@ namespace Hatra.Messenger.Migrations
                     b.Property<long?>("LastModifierUserId")
                         .HasColumnType("bigint");
 
-                    b.Property<Guid?>("LogoMediaId")
-                        .HasColumnType("uniqueidentifier");
+                    b.Property<string>("LogoAddress")
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Title")
                         .HasMaxLength(50)
@@ -1589,8 +1632,8 @@ namespace Hatra.Messenger.Migrations
                     b.Property<DateTime>("CreationTime")
                         .HasColumnType("datetime2");
 
-                    b.Property<Guid?>("MediaId")
-                        .HasColumnType("uniqueidentifier");
+                    b.Property<string>("MediaAddress")
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<int>("ReceiveCount")
                         .HasColumnType("int");
@@ -1617,37 +1660,6 @@ namespace Hatra.Messenger.Migrations
                     b.HasIndex("UserId");
 
                     b.ToTable("ChatContents");
-                });
-
-            modelBuilder.Entity("Hatra.Messenger.Chats.Entities.ChatMedia", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<string>("Address")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<DateTime>("CreationTime")
-                        .HasColumnType("datetime2");
-
-                    b.Property<long?>("CreatorUserId")
-                        .HasColumnType("bigint");
-
-                    b.Property<string>("MimeType")
-                        .IsRequired()
-                        .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)");
-
-                    b.Property<int>("Size")
-                        .HasColumnType("int");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("CreatorUserId");
-
-                    b.ToTable("ChatMedias");
                 });
 
             modelBuilder.Entity("Hatra.Messenger.Chats.Entities.ChatParticipant", b =>
@@ -1682,8 +1694,16 @@ namespace Hatra.Messenger.Migrations
                     b.Property<long?>("LastModifierUserId")
                         .HasColumnType("bigint");
 
+                    b.Property<string>("LogoAddress")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<string>("Setting")
                         .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Title")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
 
                     b.HasKey("UserId", "ChatId");
 
@@ -1958,6 +1978,17 @@ namespace Hatra.Messenger.Migrations
                     b.Navigation("LastModifierUser");
                 });
 
+            modelBuilder.Entity("Hatra.Messenger.Authorization.Users.RefreshToken", b =>
+                {
+                    b.HasOne("Hatra.Messenger.Authorization.Users.User", "User")
+                        .WithMany("RefreshTokens")
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("User");
+                });
+
             modelBuilder.Entity("Hatra.Messenger.Authorization.Users.User", b =>
                 {
                     b.HasOne("Hatra.Messenger.Authorization.Users.User", "CreatorUser")
@@ -2016,15 +2047,6 @@ namespace Hatra.Messenger.Migrations
                     b.Navigation("Chat");
 
                     b.Navigation("User");
-                });
-
-            modelBuilder.Entity("Hatra.Messenger.Chats.Entities.ChatMedia", b =>
-                {
-                    b.HasOne("Hatra.Messenger.Authorization.Users.User", "CreatorUser")
-                        .WithMany()
-                        .HasForeignKey("CreatorUserId");
-
-                    b.Navigation("CreatorUser");
                 });
 
             modelBuilder.Entity("Hatra.Messenger.Chats.Entities.ChatParticipant", b =>
@@ -2154,6 +2176,8 @@ namespace Hatra.Messenger.Migrations
                     b.Navigation("Logins");
 
                     b.Navigation("Permissions");
+
+                    b.Navigation("RefreshTokens");
 
                     b.Navigation("Roles");
 

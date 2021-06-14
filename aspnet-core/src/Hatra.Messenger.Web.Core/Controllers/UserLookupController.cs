@@ -36,7 +36,7 @@ namespace Hatra.Messenger.Controllers
                 Id = user.Id,
                 Status = string.Empty,
                 FullName = user.FullName,
-                ImageAddress = string.Empty,
+                AvatarAddress = string.Empty,
                 Username = user.UserName
             });
         }

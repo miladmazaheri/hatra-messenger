@@ -10,8 +10,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Hatra.Messenger.Migrations
 {
     [DbContext(typeof(MessengerDbContext))]
-    [Migration("20210614045123_ChatMediaDropped")]
-    partial class ChatMediaDropped
+    [Migration("20210614065642_Init_Db")]
+    partial class Init_Db
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {

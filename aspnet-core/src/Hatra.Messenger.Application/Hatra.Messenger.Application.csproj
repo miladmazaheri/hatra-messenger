@@ -11,6 +11,7 @@
     <RootNamespace>Hatra.Messenger</RootNamespace>
   </PropertyGroup>
   <ItemGroup>
+    <PackageReference Include="DNTPersianUtils.Core" Version="4.3.0" />
     <PackageReference Include="KavenegarDotNetCore" Version="1.0.3" />
   </ItemGroup>
   <ItemGroup>

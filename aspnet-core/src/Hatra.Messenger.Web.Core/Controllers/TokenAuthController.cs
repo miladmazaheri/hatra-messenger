@@ -186,8 +186,8 @@ namespace Hatra.Messenger.Controllers
             }
 
             await _userManager.UpdateSecurityStampAsync(user);
-
             await _signInManager.SignInAsync(user, true);
+            await _logInManager.SaveSuccessfulLoginAttemptAsync(user.Id, user.UserName);
 
             var device = GetDevice();
             var ip = GetIpAddress();

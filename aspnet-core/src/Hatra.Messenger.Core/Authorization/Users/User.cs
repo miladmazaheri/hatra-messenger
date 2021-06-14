@@ -11,6 +11,7 @@ namespace Hatra.Messenger.Authorization.Users
         public const string DefaultPassword = "123qwe";
 
         public string AvatarAddress{ get; set; }
+        public string Status { get; set; }
 
         public virtual ICollection<RefreshToken> RefreshTokens { get; set; }
         

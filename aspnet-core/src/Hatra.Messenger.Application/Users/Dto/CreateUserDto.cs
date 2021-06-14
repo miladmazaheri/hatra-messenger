@@ -36,6 +36,13 @@ namespace Hatra.Messenger.Users.Dto
         [DisableAuditing]
         public string Password { get; set; }
 
+        public string AvatarAddress{ get; set; }
+
+        [StringLength(100)]
+        public string Status { get; set; }
+
+
+
         public void Normalize()
         {
             if (RoleNames == null)

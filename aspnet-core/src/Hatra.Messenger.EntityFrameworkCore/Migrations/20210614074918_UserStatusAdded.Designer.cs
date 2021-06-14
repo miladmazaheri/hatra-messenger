@@ -10,8 +10,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Hatra.Messenger.Migrations
 {
     [DbContext(typeof(MessengerDbContext))]
-    [Migration("20210610062127_CreateSP_InsertOrUpdateRefreshToken")]
-    partial class CreateSP_InsertOrUpdateRefreshToken
+    [Migration("20210614074918_UserStatusAdded")]
+    partial class UserStatusAdded
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -1439,7 +1439,7 @@ namespace Hatra.Messenger.Migrations
                     b.HasIndex("Token", "Device", "Expires")
                         .IsUnique();
 
-                    b.ToTable("RefreshToken");
+                    b.ToTable("RefreshTokens");
                 });
 
             modelBuilder.Entity("Hatra.Messenger.Authorization.Users.User", b =>
@@ -1455,6 +1455,9 @@ namespace Hatra.Messenger.Migrations
                     b.Property<string>("AuthenticationSource")
                         .HasMaxLength(64)
                         .HasColumnType("nvarchar(64)");
+
+                    b.Property<string>("AvatarAddress")
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("ConcurrencyStamp")
                         .IsConcurrencyToken()
@@ -1541,6 +1544,10 @@ namespace Hatra.Messenger.Migrations
                         .HasMaxLength(128)
                         .HasColumnType("nvarchar(128)");
 
+                    b.Property<string>("Status")
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
                     b.Property<string>("Surname")
                         .IsRequired()
                         .HasMaxLength(64)
@@ -1599,8 +1606,8 @@ namespace Hatra.Messenger.Migrations
                     b.Property<long?>("LastModifierUserId")
                         .HasColumnType("bigint");
 
-                    b.Property<Guid?>("LogoMediaId")
-                        .HasColumnType("uniqueidentifier");
+                    b.Property<string>("LogoAddress")
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Title")
                         .HasMaxLength(50)
@@ -1629,8 +1636,8 @@ namespace Hatra.Messenger.Migrations
                     b.Property<DateTime>("CreationTime")
                         .HasColumnType("datetime2");
 
-                    b.Property<Guid?>("MediaId")
-                        .HasColumnType("uniqueidentifier");
+                    b.Property<string>("MediaAddress")
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<int>("ReceiveCount")
                         .HasColumnType("int");
@@ -1657,37 +1664,6 @@ namespace Hatra.Messenger.Migrations
                     b.HasIndex("UserId");
 
                     b.ToTable("ChatContents");
-                });
-
-            modelBuilder.Entity("Hatra.Messenger.Chats.Entities.ChatMedia", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<string>("Address")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<DateTime>("CreationTime")
-                        .HasColumnType("datetime2");
-
-                    b.Property<long?>("CreatorUserId")
-                        .HasColumnType("bigint");
-
-                    b.Property<string>("MimeType")
-                        .IsRequired()
-                        .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)");
-
-                    b.Property<int>("Size")
-                        .HasColumnType("int");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("CreatorUserId");
-
-                    b.ToTable("ChatMedia");
                 });
 
             modelBuilder.Entity("Hatra.Messenger.Chats.Entities.ChatParticipant", b =>
@@ -1722,8 +1698,16 @@ namespace Hatra.Messenger.Migrations
                     b.Property<long?>("LastModifierUserId")
                         .HasColumnType("bigint");
 
+                    b.Property<string>("LogoAddress")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<string>("Setting")
                         .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Title")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
 
                     b.HasKey("UserId", "ChatId");
 
@@ -2067,15 +2051,6 @@ namespace Hatra.Messenger.Migrations
                     b.Navigation("Chat");
 
                     b.Navigation("User");
-                });
-
-            modelBuilder.Entity("Hatra.Messenger.Chats.Entities.ChatMedia", b =>
-                {
-                    b.HasOne("Hatra.Messenger.Authorization.Users.User", "CreatorUser")
-                        .WithMany()
-                        .HasForeignKey("CreatorUserId");
-
-                    b.Navigation("CreatorUser");
                 });
 
             modelBuilder.Entity("Hatra.Messenger.Chats.Entities.ChatParticipant", b =>

@@ -1542,6 +1542,10 @@ namespace Hatra.Messenger.Migrations
                         .HasMaxLength(128)
                         .HasColumnType("nvarchar(128)");
 
+                    b.Property<string>("Status")
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
                     b.Property<string>("Surname")
                         .IsRequired()
                         .HasMaxLength(64)

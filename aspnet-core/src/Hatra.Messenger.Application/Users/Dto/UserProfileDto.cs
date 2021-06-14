@@ -1,14 +1,39 @@
-using System;
+﻿using System;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
-using Abp.Application.Services.Dto;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
 using Abp.Authorization.Users;
 using Abp.AutoMapper;
+using DNTPersianUtils.Core;
 using Hatra.Messenger.Authorization.Users;
 
 namespace Hatra.Messenger.Users.Dto
 {
     [AutoMapFrom(typeof(User))]
-    public class UserDto : EntityDto<long>
+    public class UserProfileDto
+    {
+        public string UserName { get; set; }
+
+        public string Name { get; set; }
+
+        public string Surname { get; set; }
+
+        public string EmailAddress { get; set; }
+
+        public DateTime? LastLoginTime { get; set; }
+
+        public DateTime CreationTime { get; set; }
+
+        public string AvatarAddress{ get; set; }
+
+        public string Status { get; set; }
+
+        public string PhoneNumber { get; set; }
+    }
+    [AutoMapFrom(typeof(User))]
+    public class UpdateUserProfileDto
     {
         [Required]
         [StringLength(AbpUserBase.MaxUserNameLength)]
@@ -27,19 +52,13 @@ namespace Hatra.Messenger.Users.Dto
         [StringLength(AbpUserBase.MaxEmailAddressLength)]
         public string EmailAddress { get; set; }
 
-        public bool IsActive { get; set; }
-
-        public string FullName { get; set; }
-
-        public DateTime? LastLoginTime { get; set; }
-
-        public DateTime CreationTime { get; set; }
-
-        public string[] RoleNames { get; set; }
-
         public string AvatarAddress{ get; set; }
 
         [StringLength(100)]
         public string Status { get; set; }
+
+        [ValidIranianMobileNumber]
+        [Required]
+        public string PhoneNumber { get; set; }
     }
 }

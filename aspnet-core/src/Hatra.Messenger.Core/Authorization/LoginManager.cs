@@ -1,4 +1,6 @@
-﻿using Microsoft.AspNetCore.Identity;
+﻿using System.Threading.Tasks;
+using System.Transactions;
+using Microsoft.AspNetCore.Identity;
 using Abp.Authorization;
 using Abp.Authorization.Users;
 using Abp.Configuration;
@@ -40,6 +42,30 @@ namespace Hatra.Messenger.Authorization
                   roleManager, 
                   claimsPrincipalFactory)
         {
+        }
+
+        public virtual async Task SaveSuccessfulLoginAttemptAsync(long userId,string username)
+        {
+             using var uow = UnitOfWorkManager.Begin(TransactionScopeOption.Suppress);
+             var tenantId = 1;
+            using (UnitOfWorkManager.Current.SetTenantId(tenantId))
+            {
+                var loginAttempt = new UserLoginAttempt
+                {
+                    TenantId = tenantId,
+                    TenancyName = "Default",
+                    UserId = userId,
+                    UserNameOrEmailAddress = username,
+                    Result = AbpLoginResultType.Success,
+                    BrowserInfo = ClientInfoProvider.BrowserInfo,
+                    ClientIpAddress = ClientInfoProvider.ClientIpAddress,
+                    ClientName = ClientInfoProvider.ComputerName,
+                };
+
+                await UserLoginAttemptRepository.InsertAsync(loginAttempt);
+                await UnitOfWorkManager.Current.SaveChangesAsync();
+                await uow.CompleteAsync();
+            }
         }
     }
 }

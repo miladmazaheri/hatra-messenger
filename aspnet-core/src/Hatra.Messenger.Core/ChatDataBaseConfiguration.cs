@@ -1,13 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Hatra.Messenger.Authorization.Users;
+﻿using Hatra.Messenger.Authorization.Users;
 using Hatra.Messenger.Chats.Entities;
 using Microsoft.EntityFrameworkCore;
 
-namespace Hatra.Messenger.Chats
+namespace Hatra.Messenger
 {
     public static class ChatDataBaseConfiguration
     {
@@ -35,6 +30,8 @@ namespace Hatra.Messenger.Chats
             builder.Entity<ChatContent>().HasOne(x => x.User).WithMany().HasForeignKey(x => x.UserId).IsRequired(false)
                 .OnDelete(DeleteBehavior.Restrict);
             builder.Entity<ChatContent>().Property(x => x.ReplyOfId).IsRequired(false);
+
+            builder.Entity<User>().Property(x => x.Status).HasMaxLength(100).IsRequired(false);
 
         }
     }

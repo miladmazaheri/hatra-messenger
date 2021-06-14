@@ -14,6 +14,8 @@ namespace Hatra.Messenger.Users.Dto
 
             CreateMap<CreateUserDto, User>();
             CreateMap<CreateUserDto, User>().ForMember(x => x.Roles, opt => opt.Ignore());
+            CreateMap<User, UserProfileDto>();
+            CreateMap<UpdateUserProfileDto, User>();
         }
     }
 }
