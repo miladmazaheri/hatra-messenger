@@ -15,14 +15,14 @@ namespace Hatra.Messenger.Migrations
 AS
 BEGIN
 	begin tran
-if exists (select id from RefreshToken with (updlock,serializable) where UserId = @userID and Device= @device and CreatedByIp = @ip)
+if exists (select id from RefreshTokens with (updlock,serializable) where UserId = @userID and Device= @device and CreatedByIp = @ip)
 begin
-   update RefreshToken set Token = @token,CreationTime=GetDate(),Expires =@expires
+   update RefreshTokens set Token = @token,CreationTime=GetDate(),Expires =@expires
    where UserId = @userID and Device= @device and CreatedByIp = @ip
 end
 else
 begin
-   insert into RefreshToken (UserId,Token,Expires,CreationTime,CreatedByIp,Device) values
+   insert into RefreshTokens (UserId,Token,Expires,CreationTime,CreatedByIp,Device) values
    (@userId,@token,@expires,GetDate(),@ip,@device)
 end
 commit tran

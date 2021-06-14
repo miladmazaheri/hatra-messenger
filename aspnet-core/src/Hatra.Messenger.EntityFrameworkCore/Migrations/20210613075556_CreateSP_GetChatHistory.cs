@@ -13,7 +13,7 @@ BEGIN
 select 
 c.Id as ChatId,
 (isnull(c.Title,cp.Title)) as Title,
-(isnull(c.LogoMediaId,cp.LogoMediaId)) as LogoMediaId,
+(isnull(c.LogoAddress,cp.LogoAddress)) as LogoAddress,
 0 as UnreadCount,
 cc.id as LastContent_Id ,     
 cc.UserId as LastContent_UserId  ,

@@ -11,7 +11,7 @@ namespace Hatra.Messenger.Chats.Entities
         public Chat Chat { get; set; }
         public long? UserId { get; set; }
         public User User { get; set; }
-        public Guid? MediaId { get; set; }
+        public string MediaAddress{ get; set; }
         public string Text { get; set; }
         public Guid? ReplyOfId { get; set; }
         public int ViewCount { get; set; }

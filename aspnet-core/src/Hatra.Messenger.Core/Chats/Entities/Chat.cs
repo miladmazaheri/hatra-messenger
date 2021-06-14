@@ -16,9 +16,9 @@ namespace Hatra.Messenger.Chats.Entities
         }
         public virtual string Title { get; set; }
         public virtual ChatType ChatType { get; set; }
-        public virtual Guid? LogoMediaId { get; set; }
+        public virtual string LogoAddress { get; set; }
 
-        public virtual ICollection<ChatParticipant> Participants{ get; set; }
+        public virtual ICollection<ChatParticipant> Participants { get; set; }
 
         public DateTime CreationTime { get; set; }
         public long? CreatorUserId { get; set; }

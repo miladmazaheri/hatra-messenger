@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Abp.Application.Services;
 using Hatra.Messenger.Common.DataTransferObjects;
+using Hatra.Messenger.Common.DataTransferObjects.Chat;
 
 namespace Hatra.Messenger.Chat
 {
@@ -12,5 +13,6 @@ namespace Hatra.Messenger.Chat
     {
         Task<List<ChatListItemWithLastContentDto>> GetChatHistoryAsync(long userId);
         Task<ChatListItemDto> StartPrivateChatAsync(long userId, long userReceiverId);
+        Task InsertContentAsync(ChatContentDto model);
     }
 }

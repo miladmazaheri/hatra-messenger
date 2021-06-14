@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Abp.Application.Services;
 using Hatra.Messenger.Common.DataTransferObjects;
+using Hatra.Messenger.Common.DataTransferObjects.Chat;
 using Hatra.Messenger.EntityFrameworkCore.Repositories;
 
 namespace Hatra.Messenger.Chat
@@ -13,7 +14,6 @@ namespace Hatra.Messenger.Chat
     public class ChatAppService : MessengerAppServiceBase, IChatAppService
     {
         private readonly IChatRepository _chatRepository;
-
         public ChatAppService(IChatRepository chatRepository)
         {
             _chatRepository = chatRepository;
@@ -27,6 +27,11 @@ namespace Hatra.Messenger.Chat
         public Task<ChatListItemDto> StartPrivateChatAsync(long userId, long userReceiverId)
         {
             return _chatRepository.StartPrivateChatAsync(userId,userReceiverId);
+        }
+
+        public Task InsertContentAsync(ChatContentDto model)
+        {
+            return _chatRepository.InsertContentAsync(model);
         }
     }
 }

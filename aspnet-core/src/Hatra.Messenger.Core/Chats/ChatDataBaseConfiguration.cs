@@ -36,11 +36,6 @@ namespace Hatra.Messenger.Chats
                 .OnDelete(DeleteBehavior.Restrict);
             builder.Entity<ChatContent>().Property(x => x.ReplyOfId).IsRequired(false);
 
-
-            builder.Entity<ChatMedia>().Property(x => x.MimeType).HasMaxLength(100).IsRequired(true);
-            builder.Entity<ChatMedia>().Property(x => x.Address).IsRequired(true);
-
-
         }
     }
 }

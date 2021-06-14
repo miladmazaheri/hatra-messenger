@@ -7,7 +7,7 @@ namespace Hatra.Messenger.Common.DataTransferObjects
         public Guid ChatId { get; set; }
         public string Title { get; set; }
         public int UnreadCount { get; set; }
-        public Guid? LogoMediaId { get; set; }
+        public string LogoAddress { get; set; }
     }
 
     public class ChatListItemWithLastContentDto : ChatListItemDto
