@@ -12,6 +12,7 @@ using Hatra.Messenger.Net.MimeTypes;
 using Hatra.Messenger.SettingModels;
 using Hatra.Messenger.Tools;
 using Hatra.Messenger.Web.Host.Hubs;
+using ImageMagick;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -70,8 +71,8 @@ namespace Hatra.Messenger.Web.Host.Controllers
 
                 if (model.File.IsImage())
                 {
-                    thumbName = Path.ChangeExtension(filename, "thumb");
-                    CreateThumbnail(output, thumbName, _uploadSetting.ThumbnailWidth, _uploadSetting.ThumbnailHeight);
+                    thumbName = _uploadSetting.ThumbnailPrefix + filename;
+                    CreateThumbnail(output, thumbName);
                 }
             }
 
@@ -102,13 +103,37 @@ namespace Hatra.Messenger.Web.Host.Controllers
             return path + filename;
         }
 
-        private void CreateThumbnail(Stream fileStream, string fileName, int desiredWidth = 250, int desiredHeight = 250)
+        private void CreateThumbnail(FileStream fileStream, string fileName)
         {
             try
             {
-                var uploadedImage = Image.FromStream(fileStream);
-                var thumb = uploadedImage.GetThumbnailImage(desiredWidth, desiredHeight, () => false, IntPtr.Zero);
-                thumb.Save(GetPathAndFilename(fileName));
+                //var uploadedImage = Image.FromStream(fileStream);
+                //var thumb = uploadedImage.GetThumbnailImage(desiredWidth, desiredHeight, () => false, IntPtr.Zero);
+                //thumb.Save(GetPathAndFilename(fileName));
+                fileStream.Seek(0, SeekOrigin.Begin);
+                var optimizer = new ImageOptimizer();
+                if (optimizer.LosslessCompress(fileStream))
+                {
+                    using (var image = new MagickImage(fileStream))
+                    {
+                        var newWidth = image.Width - (image.Width * 70 / 100);
+                        var newHeight = image.Height - (image.Height * 70 / 100);
+                        var size = new MagickGeometry(newWidth, newHeight) { IgnoreAspectRatio = false };
+                        image.Resize(size);
+                        image.Write(GetPathAndFilename(fileName));
+                    }
+                }
+                else
+                {
+                    using (var image = new MagickImage(fileStream))
+                    {
+                        var newWidth = image.Width - (image.Width * 70 / 100);
+                        var newHeight = image.Height - (image.Height * 70 / 100);
+                        var size = new MagickGeometry(newWidth, newHeight) { IgnoreAspectRatio = false };
+                        image.Resize(size);
+                        image.Write(GetPathAndFilename(fileName));
+                    }
+                }
             }
             catch (Exception)
             {

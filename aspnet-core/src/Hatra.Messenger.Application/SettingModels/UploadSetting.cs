@@ -11,7 +11,6 @@ namespace Hatra.Messenger.SettingModels
         public int AllowedFileSize { get; set; } = 50;
         public int BufferSize { get; set; } = 16;
         public string UploadDirectory { get; set; } = "Upload";
-        public int ThumbnailWidth { get; set; } = 250;
-        public int ThumbnailHeight { get; set; } = 250;
+        public string ThumbnailPrefix { get; set; } = "t_";
     }
 }

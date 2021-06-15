@@ -34,7 +34,6 @@
     <PackageReference Include="Abp.AspNetCore.SignalR" Version="6.3.0" />
     <PackageReference Include="Abp.Castle.Log4Net" Version="6.3.0" />
     <PackageReference Include="Magick.NET-Q8-AnyCPU" Version="7.24.1" />
-    <PackageReference Include="Magick.NET.Core" Version="7.0.1" />
     <PackageReference Include="Microsoft.AspNetCore.SignalR" Version="1.1.0" />
     <PackageReference Include="Microsoft.AspNetCore.SignalR.Common" Version="5.0.6" />
     <PackageReference Include="Microsoft.AspNetCore.SignalR.Core" Version="1.1.0" />
