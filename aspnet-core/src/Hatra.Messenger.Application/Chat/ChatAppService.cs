@@ -33,5 +33,10 @@ namespace Hatra.Messenger.Chat
         {
             return _chatRepository.InsertContentAsync(model);
         }
+
+        public Task ClearAllAsync()
+        {
+            return _chatRepository.ClearAllAsync();
+        }
     }
 }

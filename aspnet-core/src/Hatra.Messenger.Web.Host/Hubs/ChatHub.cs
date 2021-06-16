@@ -14,7 +14,7 @@ using Microsoft.AspNetCore.SignalR;
 
 namespace Hatra.Messenger.Web.Host.Hubs
 {
-    [AbpAuthorize]
+    //[AbpAuthorize]
     public class ChatHub : Hub, ITransientDependency
     {
         public static readonly ConcurrentDictionary<long, string> OnlineUsers = new ConcurrentDictionary<long, string>();
@@ -23,7 +23,11 @@ namespace Hatra.Messenger.Web.Host.Hubs
         {
             ChatService = chatService;
         }
-
+        public async Task SendMessage(string message)
+        {
+            var username = Context.User?.FindFirstValue(ClaimTypes.Name) ?? "unknown";
+            await Clients.All.SendAsync("getMessage", JsonSerializer.Serialize(new MessageModel(username, message)));
+        }
         public async Task SendPrivateMessage(long receiverId, Guid chatId, string message)
         {
             var messageModel = JsonSerializer.Deserialize<ReceivedMessageDto>(message);
@@ -57,20 +61,20 @@ namespace Hatra.Messenger.Web.Host.Hubs
         }
     }
 
-    //public class MessageModel
-    //{
-    //    public string Sender { get; set; }
-    //    public string Content { get; set; }
+    public class MessageModel
+    {
+        public string Sender { get; set; }
+        public string Content { get; set; }
 
-    //    public MessageModel(string sender, string content)
-    //    {
-    //        Sender = sender;
-    //        Content = content;
-    //    }
+        public MessageModel(string sender, string content)
+        {
+            Sender = sender;
+            Content = content;
+        }
 
-    //    public MessageModel()
-    //    {
+        public MessageModel()
+        {
 
-    //    }
-    //}
+        }
+    }
 }

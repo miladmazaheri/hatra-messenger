@@ -14,5 +14,6 @@ namespace Hatra.Messenger.Chat
         Task<List<ChatListItemWithLastContentDto>> GetChatHistoryAsync(long userId);
         Task<ChatListItemDto> StartPrivateChatAsync(long userId, long userReceiverId);
         Task InsertContentAsync(ChatContentDto model);
+        Task ClearAllAsync();
     }
 }

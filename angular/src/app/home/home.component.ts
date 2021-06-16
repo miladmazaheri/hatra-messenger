@@ -37,6 +37,12 @@ export class HomeComponent extends AppComponentBase implements OnInit,OnDestroy 
       this.messageText = null;
     }
   }
+  sendPrivateMessage() {
+    if (this.messageText) {
+      this.signalRService.sendPrivateMessage(this.messageText)
+      this.messageText = null;
+    }
+  }
 
 
   ngOnDestroy(): void {

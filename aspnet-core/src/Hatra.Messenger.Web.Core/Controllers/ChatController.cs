@@ -37,5 +37,10 @@ namespace Hatra.Messenger.Controllers
             var userId = User.Identity.GetUserId().Value;
             return new ActionResult<ChatListItemDto>(await _chatAppService.StartPrivateChatAsync(userId,model.ReceiverId));
         }
+        [HttpDelete]
+        public Task ClearAll()
+        {
+            return _chatAppService.ClearAllAsync();
+        }
     }
 }

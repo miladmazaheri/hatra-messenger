@@ -39,11 +39,17 @@ export class SignalRService {
       console.log(data);
       this._messageSource.next(MessageDto.fromJS(data));
     });
+    this.hubConnection.on('privateMessage', (data) => {
+      console.log(data);
+    });
     console.log('Listeners Initialized!');
   }
 
   public sendMessage = (message: any) => {
     this.hubConnection.invoke("SendMessage", message)
+  }
+  public sendPrivateMessage = (message: any) => {
+    this.hubConnection.invoke("SendPrivateMessage",2,'1FCE8D21-1DCC-41B5-8D50-50D93D97901C', message)
   }
 }
 
