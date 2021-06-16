@@ -40,6 +40,7 @@ namespace Hatra.Messenger.Controllers
                 Username = user.UserName
             });
         }
+
         [HttpGet]
         public async Task<ActionResult<UserInfoDto>> GetById(long id)
         {
