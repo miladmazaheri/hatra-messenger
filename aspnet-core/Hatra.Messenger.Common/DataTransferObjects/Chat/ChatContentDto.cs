@@ -25,7 +25,7 @@ namespace Hatra.Messenger.Common.DataTransferObjects.Chat
     {
         public Guid ChatId { get; set; }
         public long UserId { get; set; }
-
+        public DateTime CreationTime { get; set; }
         public ChatContentDto()
         {
 

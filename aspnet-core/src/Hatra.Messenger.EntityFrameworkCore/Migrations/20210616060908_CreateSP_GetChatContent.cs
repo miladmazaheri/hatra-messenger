@@ -33,6 +33,7 @@ from ChatContents cc
 where cc.ChatId = @chatId and cc.CreationTime < @baseDateTime
 order by cc.CreationTime desc
 END";
+            migrationBuilder.Sql(q);
         }
 
         protected override void Down(MigrationBuilder migrationBuilder)
