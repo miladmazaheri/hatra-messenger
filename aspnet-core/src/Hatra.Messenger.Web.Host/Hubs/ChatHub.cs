@@ -33,7 +33,7 @@ namespace Hatra.Messenger.Web.Host.Hubs
             var messageModel = JsonSerializer.Deserialize<ReceivedMessageDto>(message);
             if (messageModel != null && messageModel.IsValid())
             {
-                var content = new ChatContentDto(chatId, Context.GetUserId(), messageModel);
+                var content = new ChatContentDto(chatId, Context.GetUserId(), DateTime.Now, messageModel);
                 await ChatService.InsertContentAsync(content);
 
                 if (OnlineUsers.TryGetValue(receiverId, out var connectionId))

@@ -31,11 +31,12 @@ namespace Hatra.Messenger.Common.DataTransferObjects.Chat
 
         }
 
-        public ChatContentDto(Guid chatId, long userId, ReceivedMessageDto message)
+        public ChatContentDto(Guid chatId, long userId,DateTime creationTime ,ReceivedMessageDto message)
         {
             ChatId = chatId;
             UserId = userId;
             Id = message.Id;
+            CreationTime = creationTime;
             MediaAddress = message.MediaAddress;
             ThumbnailAddress = message.ThumbnailAddress;
             Text = message.Text;
