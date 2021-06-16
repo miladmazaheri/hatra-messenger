@@ -40,5 +40,20 @@ namespace Hatra.Messenger.Controllers
                 Username = user.UserName
             });
         }
+        [HttpGet]
+        public async Task<ActionResult<UserInfoDto>> GetById(long id)
+        {
+            var user = await _userManager.GetUserByIdAsync(id);
+            if (user == null) return NotFound();
+
+            return new ActionResult<UserInfoDto>(new UserInfoDto
+            {
+                Id = user.Id,
+                Status = string.Empty,
+                FullName = user.FullName,
+                AvatarAddress = string.Empty,
+                Username = user.UserName
+            });
+        }
     }
 }
