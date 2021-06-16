@@ -5,6 +5,7 @@ using System.Linq;
 using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
+using DNTPersianUtils.Core;
 
 namespace Hatra.Messenger.Common.DataTransferObjects.Chat
 {
@@ -19,7 +20,10 @@ namespace Hatra.Messenger.Common.DataTransferObjects.Chat
         public bool IsValid() => !string.IsNullOrWhiteSpace(MediaAddress) ||
                                !string.IsNullOrWhiteSpace(Text);
 
-
+        public void ApplyCorrectYeKe()
+        {
+            Text?.ApplyCorrectYeKe();
+        }
     }
     public class ChatContentDto : ReceivedMessageDto
     {

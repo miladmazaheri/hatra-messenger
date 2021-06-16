@@ -43,6 +43,7 @@ namespace Hatra.Messenger.Users
                 throw new UnauthorizedAccessException();
             }
             var user = await _userManager.GetUserByIdAsync(userId.Value);
+            input.ApplyCorrectYeKe();
             MapToEntity(input, user);
             CheckErrors(await _userManager.UpdateAsync(user));
         }

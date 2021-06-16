@@ -60,5 +60,13 @@ namespace Hatra.Messenger.Users.Dto
         [ValidIranianMobileNumber]
         [Required]
         public string PhoneNumber { get; set; }
+
+        public void ApplyCorrectYeKe()
+        {
+            UserName?.ApplyCorrectYeKe();
+            Name?.ApplyCorrectYeKe();
+            Surname?.ApplyCorrectYeKe();
+            Status?.ApplyCorrectYeKe();
+        }
     }
 }

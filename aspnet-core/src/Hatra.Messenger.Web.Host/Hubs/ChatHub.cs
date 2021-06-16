@@ -8,6 +8,7 @@ using Abp.Authorization;
 using Abp.Dependency;
 using Abp.Runtime.Session;
 using Castle.Core.Logging;
+using DNTPersianUtils.Core;
 using Hatra.Messenger.Chat;
 using Hatra.Messenger.Common.DataTransferObjects.Chat;
 using Microsoft.AspNetCore.SignalR;
@@ -33,12 +34,13 @@ namespace Hatra.Messenger.Web.Host.Hubs
             var messageModel = JsonSerializer.Deserialize<ReceivedMessageDto>(message);
             if (messageModel != null && messageModel.IsValid())
             {
+                messageModel.ApplyCorrectYeKe();
                 var content = new ChatContentDto(chatId, Context.GetUserId(), DateTime.Now, messageModel);
                 await ChatService.InsertContentAsync(content);
 
                 if (OnlineUsers.TryGetValue(receiverId, out var connectionId))
                 {
-                    await Clients.Client(connectionId).SendPrivateMessageAsync(JsonSerializer.Serialize(content));
+                    await Clients.Client(connectionId).SendPrivateMessageAsync(JsonSerializer.Serialize(content,new JsonSerializerOptions(JsonSerializerDefaults.Web)));
                 }
                 else
                 {
