@@ -19,14 +19,14 @@ namespace Hatra.Messenger.Chat
             _chatRepository = chatRepository;
         }
 
-        public  Task<List<ChatListItemWithLastContentDto>> GetChatHistoryAsync(long userId)
+        public Task<List<ChatListItemWithLastContentDto>> GetChatHistoryAsync(long userId)
         {
             return _chatRepository.GetChatHistoryAsync(userId);
         }
 
         public Task<ChatListItemDto> StartPrivateChatAsync(long userId, long userReceiverId)
         {
-            return _chatRepository.StartPrivateChatAsync(userId,userReceiverId);
+            return _chatRepository.StartPrivateChatAsync(userId, userReceiverId);
         }
 
         public Task InsertContentAsync(ChatContentDto model)
@@ -37,6 +37,16 @@ namespace Hatra.Messenger.Chat
         public Task ClearAllAsync()
         {
             return _chatRepository.ClearAllAsync();
+        }
+
+        public Task<List<ChatContentDto>> GetChatContentAsync(ChatContentRequestDto model)
+        {
+            return _chatRepository.GetChatContentAsync(model);
+        }
+
+        public Task<bool> CanGetContentAsync(long userId, Guid chatId)
+        {
+            return _chatRepository.CanGetContentAsync(userId, chatId);
         }
     }
 }

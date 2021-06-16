@@ -22,8 +22,10 @@ namespace Hatra.Messenger.EntityFrameworkCore.Repositories
     {
         Task<List<ChatListItemWithLastContentDto>> GetChatHistoryAsync(long userId);
         Task<ChatListItemDto> StartPrivateChatAsync(long userId, long userReceiverId);
+        Task<List<ChatContentDto>> GetChatContentAsync(ChatContentRequestDto model);
         Task InsertContentAsync(ChatContentDto model);
         Task ClearAllAsync();
+        Task<bool> CanGetContentAsync(long userId, Guid chatId);
     }
     public class ChatRepository : MessengerRepositoryBase<Chat, Guid>, IChatRepository
     {
@@ -42,10 +44,19 @@ namespace Hatra.Messenger.EntityFrameworkCore.Repositories
             return await reader.ToList<ChatListItemWithLastContentDto>();
         }
 
+        public async Task<List<ChatContentDto>> GetChatContentAsync(ChatContentRequestDto model)
+        {
+            await EnsureConnectionOpenAsync();
+            var query = @$"EXEC [dbo].[GetChatContent] @count = {model.Count},@chatId = '{model.ChatId}',@baseDateTime = '{model.BaseDateTime}'";
+            await using var command = await CreateTSqlCommandAsync(query);
+            await using var reader = await command.ExecuteReaderAsync();
+            return await reader.ToList<ChatContentDto>();
+        }
+
 
         public async Task<ChatListItemDto> StartPrivateChatAsync(long userId, long userReceiverId)
         {
-           
+
             var receiver = await _userRepository.FirstOrDefaultAsync(x => x.Id == userReceiverId);
             if (receiver == null) throw new EntityNotFoundException(typeof(User), userReceiverId);
 
@@ -120,6 +131,11 @@ namespace Hatra.Messenger.EntityFrameworkCore.Repositories
                            delete from Chats";
             await using var command = await CreateTSqlCommandAsync(query);
             _ = await command.ExecuteNonQueryAsync();
+        }
+
+        public async Task<bool> CanGetContentAsync(long userId, Guid chatId)
+        {
+            return await (await GetContextAsync()).ChatParticipants.AnyAsync(x => x.ChatId == chatId && x.UserId == userId);
         }
 
         private async Task<Guid?> GetChatAsync(long userId, long receiverId)

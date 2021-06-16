@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Reflection;
 using System.Text;
@@ -41,6 +42,17 @@ namespace Hatra.Messenger.Common.DataTransferObjects.Chat
             ReplyOfId = message.ReplyOfId;
         }
 
+
+    }
+
+    public class ChatContentRequestDto
+    {
+        [Required]
+        public int Count { get; set; } = 10;
+        [Required]
+        public Guid ChatId { get; set; }
+        [Required]
+        public DateTime BaseDateTime { get; set; } =DateTime.Now;
 
     }
 }
