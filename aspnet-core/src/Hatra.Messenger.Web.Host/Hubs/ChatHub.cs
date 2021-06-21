@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Concurrent;
+using System.Linq;
 using System.Security.Claims;
 using System.Text.Json;
 using System.Threading.Tasks;
@@ -18,7 +19,7 @@ namespace Hatra.Messenger.Web.Host.Hubs
     //[AbpAuthorize]
     public class ChatHub : Hub, ITransientDependency
     {
-        public static readonly ConcurrentDictionary<long, string> OnlineUsers = new ConcurrentDictionary<long, string>();
+        public static readonly ConcurrentDictionary<long, string[]> OnlineUsers = new ConcurrentDictionary<long, string[]>();
         protected IChatAppService ChatService { get; }
         public ChatHub(IChatAppService chatService)
         {
@@ -38,9 +39,9 @@ namespace Hatra.Messenger.Web.Host.Hubs
                 var content = new ChatContentDto(chatId, Context.GetUserId(), DateTime.Now, messageModel);
                 await ChatService.InsertContentAsync(content);
 
-                if (OnlineUsers.TryGetValue(receiverId, out var connectionId))
+                if (OnlineUsers.TryGetValue(receiverId, out var connectionIds))
                 {
-                    await Clients.Client(connectionId).SendPrivateMessageAsync(JsonSerializer.Serialize(content,new JsonSerializerOptions(JsonSerializerDefaults.Web)));
+                    await Clients.Clients(connectionIds).SendPrivateMessageAsync(JsonSerializer.Serialize(content, new JsonSerializerOptions(JsonSerializerDefaults.Web)));
                 }
                 else
                 {
@@ -52,13 +53,20 @@ namespace Hatra.Messenger.Web.Host.Hubs
 
         public override async Task OnConnectedAsync()
         {
-            OnlineUsers.GetOrAdd(Context.GetUserId(), x => Context.ConnectionId);
+            OnlineUsers.GetOrAdd(Context.GetUserId(), x => new[] { Context.ConnectionId });
             await base.OnConnectedAsync();
         }
 
         public override async Task OnDisconnectedAsync(Exception exception)
         {
-            OnlineUsers.TryRemove(Context.GetUserId(), out var res);
+            var userId = Context.GetUserId();
+            if (OnlineUsers.TryGetValue(userId, out var connectionIds))
+            {
+                connectionIds = connectionIds.Where(x => x != Context.ConnectionId).ToArray();
+                OnlineUsers.TryRemove(userId, out var res);
+                OnlineUsers.TryAdd(userId, connectionIds);
+            }
+            
             await base.OnDisconnectedAsync(exception);
         }
     }

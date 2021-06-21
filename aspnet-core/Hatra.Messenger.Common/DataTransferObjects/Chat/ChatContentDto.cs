@@ -60,4 +60,18 @@ namespace Hatra.Messenger.Common.DataTransferObjects.Chat
         public DateTime BaseDateTime { get; set; } =DateTime.Now;
 
     }
+
+    public class DeleteChatContentDto :DeleteChatDto
+    {
+        [Required]
+        public Guid MessageId { get; set; }
+       
+    }
+    public class DeleteChatDto
+    {
+        [Required]
+        public Guid ChatId { get; set; }
+        [Required]
+        public long ReceiverId { get; set; }
+    }
 }

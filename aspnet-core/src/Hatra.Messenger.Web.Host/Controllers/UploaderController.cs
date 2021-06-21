@@ -82,7 +82,7 @@ namespace Hatra.Messenger.Web.Host.Controllers
         private async Task PushUploadProgressPercentToClient(long userId, string uploadKey, int percent)
         {
             if (ChatHub.OnlineUsers.TryGetValue(userId, out var connectionId))
-                await _hubContext.Clients.Client(connectionId).PushUploadProgressPercentAsync(uploadKey, percent);
+                await _hubContext.Clients.Clients(connectionId).PushUploadProgressPercentAsync(uploadKey, percent);
         }
 
         private string EnsureCorrectFilename(string filename)

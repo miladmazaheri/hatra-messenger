@@ -17,5 +17,7 @@ namespace Hatra.Messenger.Chat
         Task ClearAllAsync();
         Task<List<ChatContentDto>> GetChatContentAsync(ChatContentRequestDto model);
         Task<bool> CanGetContentAsync(long userId, Guid chatId);
+        Task DeleteChatContentAsync(long userId, Guid messageId);
+        Task DeleteParticipantChatAsync(long userId, Guid chatId);
     }
 }

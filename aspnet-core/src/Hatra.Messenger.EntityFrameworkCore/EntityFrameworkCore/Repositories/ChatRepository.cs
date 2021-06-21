@@ -28,6 +28,8 @@ namespace Hatra.Messenger.EntityFrameworkCore.Repositories
         Task InsertContentAsync(ChatContentDto model);
         Task ClearAllAsync();
         Task<bool> CanGetContentAsync(long userId, Guid chatId);
+        Task DeleteChatContentAsync(long userId, Guid messageId);
+        Task DeleteParticipantChatAsync(long userId, Guid chatId);
     }
     public class ChatRepository : MessengerRepositoryBase<Chat, Guid>, IChatRepository
     {
@@ -142,6 +144,22 @@ namespace Hatra.Messenger.EntityFrameworkCore.Repositories
         public async Task<bool> CanGetContentAsync(long userId, Guid chatId)
         {
             return await (await GetContextAsync()).ChatParticipants.AnyAsync(x => x.ChatId == chatId && x.UserId == userId);
+        }
+
+        public async Task DeleteChatContentAsync(long userId, Guid messageId)
+        {
+            await EnsureConnectionOpenAsync();
+            var query = @$"delete from ChatContents where id='{messageId}' and userid={userId}";
+            await using var command = await CreateTSqlCommandAsync(query);
+            _ = await command.ExecuteNonQueryAsync();
+        }
+
+        public async Task DeleteParticipantChatAsync(long userId, Guid chatId)
+        {
+            await EnsureConnectionOpenAsync();
+            var query = @$"delete from ChatParticipants where ChatId = '{chatId}' and UserId ={userId}";
+            await using var command = await CreateTSqlCommandAsync(query);
+            _ = await command.ExecuteNonQueryAsync();
         }
 
         private async Task<Guid?> GetChatAsync(long userId, long receiverId)
