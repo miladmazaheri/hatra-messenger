@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Concurrent;
+using System.Collections.Generic;
 using System.Linq;
 using System.Security.Claims;
 using System.Text.Json;
@@ -19,7 +20,7 @@ namespace Hatra.Messenger.Web.Host.Hubs
     //[AbpAuthorize]
     public class ChatHub : Hub, ITransientDependency
     {
-        public static readonly ConcurrentDictionary<long, string[]> OnlineUsers = new ConcurrentDictionary<long, string[]>();
+        public static readonly ConcurrentDictionary<long, List<string>> OnlineUsers = new ConcurrentDictionary<long, List<string>>();
         protected IChatAppService ChatService { get; }
         public ChatHub(IChatAppService chatService)
         {
@@ -53,7 +54,20 @@ namespace Hatra.Messenger.Web.Host.Hubs
 
         public override async Task OnConnectedAsync()
         {
-            OnlineUsers.GetOrAdd(Context.GetUserId(), x => new[] { Context.ConnectionId });
+            var userId = Context.GetUserId();
+            if (OnlineUsers.TryGetValue(userId, out var connectionIds))
+            {
+                if (connectionIds.All(x => x != Context.ConnectionId))
+                {
+                    connectionIds.Add(Context.ConnectionId);
+                }
+            }
+            else
+            {
+                var lst = new List<string> { Context.ConnectionId };
+                OnlineUsers.GetOrAdd(userId, x => lst);
+            }
+
             await base.OnConnectedAsync();
         }
 
@@ -62,11 +76,13 @@ namespace Hatra.Messenger.Web.Host.Hubs
             var userId = Context.GetUserId();
             if (OnlineUsers.TryGetValue(userId, out var connectionIds))
             {
-                connectionIds = connectionIds.Where(x => x != Context.ConnectionId).ToArray();
-                OnlineUsers.TryRemove(userId, out var res);
-                OnlineUsers.TryAdd(userId, connectionIds);
+                connectionIds.Remove(Context.ConnectionId);
+                if (connectionIds.Count == 0)
+                {
+                    OnlineUsers.TryRemove(userId, out _);
+                }
             }
-            
+
             await base.OnDisconnectedAsync(exception);
         }
     }
