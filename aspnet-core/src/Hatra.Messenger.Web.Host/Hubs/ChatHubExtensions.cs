@@ -18,9 +18,9 @@ namespace Hatra.Messenger.Web.Host.Hubs
         {
             await proxy.SendAsync(UploadProgressPercent, uploadKey, percent);
         }
-        public static async Task PushDeleteMessageAsync(this IClientProxy proxy, Guid chatId,Guid messageId)
+        public static async Task PushDeleteMessageAsync(this IClientProxy proxy, Guid chatId,List<Guid> messageIds)
         {
-            await proxy.SendAsync(DeleteMessage, chatId, messageId);
+            await proxy.SendAsync(DeleteMessage, chatId, messageIds);
         }
         public static async Task PushDeleteChatAsync(this IClientProxy proxy, Guid chatId)
         {

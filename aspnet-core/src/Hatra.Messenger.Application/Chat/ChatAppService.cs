@@ -49,9 +49,9 @@ namespace Hatra.Messenger.Chat
             return _chatRepository.CanGetContentAsync(userId, chatId);
         }
 
-        public Task DeleteChatContentAsync(long userId, Guid messageId)
+        public Task DeleteChatContentAsync(long userId, List<Guid> messageIds)
         {
-            return _chatRepository.DeleteChatContentAsync(userId, messageId);
+            return _chatRepository.DeleteChatContentAsync(userId, messageIds);
         }
 
         public Task DeleteParticipantChatAsync(long userId, Guid chatId)

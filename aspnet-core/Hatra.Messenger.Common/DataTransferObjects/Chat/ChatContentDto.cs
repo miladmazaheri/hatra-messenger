@@ -64,7 +64,7 @@ namespace Hatra.Messenger.Common.DataTransferObjects.Chat
     public class DeleteChatContentDto :DeleteChatDto
     {
         [Required]
-        public Guid MessageId { get; set; }
+        public List<Guid> MessageIds { get; set; }
        
     }
     public class DeleteChatDto

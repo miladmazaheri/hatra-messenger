@@ -28,7 +28,7 @@ namespace Hatra.Messenger.EntityFrameworkCore.Repositories
         Task InsertContentAsync(ChatContentDto model);
         Task ClearAllAsync();
         Task<bool> CanGetContentAsync(long userId, Guid chatId);
-        Task DeleteChatContentAsync(long userId, Guid messageId);
+        Task DeleteChatContentAsync(long userId, List<Guid> messageIds);
         Task DeleteParticipantChatAsync(long userId, Guid chatId);
     }
     public class ChatRepository : MessengerRepositoryBase<Chat, Guid>, IChatRepository
@@ -44,7 +44,7 @@ namespace Hatra.Messenger.EntityFrameworkCore.Repositories
         {
             await EnsureConnectionOpenAsync();
             await using var command = await CreateCommandAsync("GetChatHistory", CommandType.StoredProcedure,
-                new SqlParameter("userId",userId)
+                new SqlParameter("userId", userId)
             );
             await using var reader = await command.ExecuteReaderAsync();
             return await reader.ToList<ChatListItemWithLastContentDto>();
@@ -54,9 +54,9 @@ namespace Hatra.Messenger.EntityFrameworkCore.Repositories
         {
             await EnsureConnectionOpenAsync();
             await using var command = await CreateCommandAsync("GetChatContent", CommandType.StoredProcedure,
-                new SqlParameter("count",model.Count),
-                new SqlParameter("baseDateTime",model.BaseDateTime),
-                new SqlParameter("chatId",model.ChatId)
+                new SqlParameter("count", model.Count),
+                new SqlParameter("baseDateTime", model.BaseDateTime),
+                new SqlParameter("chatId", model.ChatId)
             );
             await using var reader = await command.ExecuteReaderAsync();
             return await reader.ToList<ChatContentDto>();
@@ -120,13 +120,13 @@ namespace Hatra.Messenger.EntityFrameworkCore.Repositories
         {
             await EnsureConnectionOpenAsync();
             await using var command = await CreateCommandAsync("InsertChatContent", CommandType.StoredProcedure,
-                new SqlParameter("id",model.Id),
-                new SqlParameter("userId",model.UserId),
-                new SqlParameter("chatId",model.ChatId),
-                new SqlParameter("replyOfId",(object)model.ReplyOfId ?? DBNull.Value),
-                new SqlParameter("text",(object)model.Text?? DBNull.Value),
-                new SqlParameter("mediaAddress",(object)model.MediaAddress?? DBNull.Value),
-                new SqlParameter("thumbnailAddress",(object)model.ThumbnailAddress?? DBNull.Value)
+                new SqlParameter("id", model.Id),
+                new SqlParameter("userId", model.UserId),
+                new SqlParameter("chatId", model.ChatId),
+                new SqlParameter("replyOfId", (object)model.ReplyOfId ?? DBNull.Value),
+                new SqlParameter("text", (object)model.Text ?? DBNull.Value),
+                new SqlParameter("mediaAddress", (object)model.MediaAddress ?? DBNull.Value),
+                new SqlParameter("thumbnailAddress", (object)model.ThumbnailAddress ?? DBNull.Value)
             );
             _ = await command.ExecuteNonQueryAsync();
         }
@@ -146,10 +146,11 @@ namespace Hatra.Messenger.EntityFrameworkCore.Repositories
             return await (await GetContextAsync()).ChatParticipants.AnyAsync(x => x.ChatId == chatId && x.UserId == userId);
         }
 
-        public async Task DeleteChatContentAsync(long userId, Guid messageId)
+        public async Task DeleteChatContentAsync(long userId, List<Guid> messageIds)
         {
             await EnsureConnectionOpenAsync();
-            var query = @$"delete from ChatContents where id='{messageId}' and userid={userId}";
+            var cond = messageIds.Select(x => $"id = '{x}'").Aggregate((a, b) => a + " or " + b);
+            var query = @$"delete from ChatContents where ({cond}) and userid={userId}";
             await using var command = await CreateTSqlCommandAsync(query);
             _ = await command.ExecuteNonQueryAsync();
         }
@@ -166,8 +167,8 @@ namespace Hatra.Messenger.EntityFrameworkCore.Repositories
         {
             await EnsureConnectionOpenAsync();
             await using var command = await CreateCommandAsync("GetChat", CommandType.StoredProcedure,
-                new SqlParameter("userId",userId),
-                new SqlParameter("receiverId",receiverId)
+                new SqlParameter("userId", userId),
+                new SqlParameter("receiverId", receiverId)
             );
             await using var reader = await command.ExecuteReaderAsync();
             return (await reader.ToList<GetChatDto>()).FirstOrDefault()?.ChatId;

@@ -49,25 +49,30 @@ namespace Hatra.Messenger.Web.Host.Controllers
         }
 
         [HttpDelete]
-        public async Task<ActionResult> DeleteMessage(DeleteChatContentDto model)
+        public async Task<ActionResult> DeleteMessage([FromBody]DeleteChatContentDto model)
         {
+            if (model.MessageIds == null || model.MessageIds.Count == 0)
+            {
+                return BadRequest();
+            }
+
             var userId = User.Identity.GetUserId().Value;
             if (!await _chatAppService.CanGetContentAsync(userId, model.ChatId))
             {
                 return Unauthorized("You Can Not Access Requested Chat");
             }
-            await _chatAppService.DeleteChatContentAsync(userId, model.MessageId);
+            await _chatAppService.DeleteChatContentAsync(userId, model.MessageIds);
 
 
             if (ChatHub.OnlineUsers.TryGetValue(model.ReceiverId, out var connectionId))
-                await _hubContext.Clients.Clients(connectionId).PushDeleteMessageAsync(model.ChatId, model.MessageId);
+                await _hubContext.Clients.Clients(connectionId).PushDeleteMessageAsync(model.ChatId, model.MessageIds);
 
 
             return Ok();
         }
 
         [HttpDelete]
-        public async Task<ActionResult> DeleteChat(DeleteChatDto model)
+        public async Task<ActionResult> DeleteChat([FromBody]DeleteChatDto model)
         {
             var userId = User.Identity.GetUserId().Value;
             if (!await _chatAppService.CanGetContentAsync(userId, model.ChatId))
