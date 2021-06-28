@@ -14,6 +14,7 @@ namespace Hatra.Messenger.EntityFrameworkCore
         public virtual DbSet<ChatContent> ChatContents{ get; set; }
         public virtual DbSet<ChatParticipant> ChatParticipants{ get; set; }
         public virtual DbSet<RefreshToken> RefreshTokens{ get; set; }
+        public virtual DbSet<FcmToken> FcmTokens { get; set; }
 
         public MessengerDbContext(DbContextOptions<MessengerDbContext> options)
             : base(options)

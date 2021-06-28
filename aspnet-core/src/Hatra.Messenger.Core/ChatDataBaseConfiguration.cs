@@ -33,6 +33,7 @@ namespace Hatra.Messenger
             builder.Entity<ChatContent>().HasIndex(x => new {x.ChatId, x.CreationTime});
 
             builder.Entity<User>().Property(x => x.Status).HasMaxLength(100).IsRequired(false);
+            builder.Entity<FcmToken>().Property(x => x.Token).IsRequired();
 
         }
     }

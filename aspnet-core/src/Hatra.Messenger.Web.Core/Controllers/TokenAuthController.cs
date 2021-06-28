@@ -387,6 +387,7 @@ namespace Hatra.Messenger.Controllers
                 new Claim(ClaimTypes.NameIdentifier,user.Id.ToString()),
                 new Claim(ClaimTypes.Name,user.UserName),
                 new Claim(ClaimTypes.Email,user.EmailAddress),
+                new Claim(ClaimTypes.GivenName,user.FullName),
                 new Claim("AspNet.Identity.SecurityStamp",user.SecurityStamp),
                 new Claim(JwtRegisteredClaimNames.Sub, user.Id.ToString()),
                 new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),

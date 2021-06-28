@@ -33,6 +33,7 @@
   <ItemGroup>
     <PackageReference Include="Abp.AspNetCore.SignalR" Version="6.3.0" />
     <PackageReference Include="Abp.Castle.Log4Net" Version="6.3.0" />
+    <PackageReference Include="FirebaseAdmin" Version="2.2.0" />
     <PackageReference Include="Magick.NET-Q8-AnyCPU" Version="7.24.1" />
     <PackageReference Include="Microsoft.AspNetCore.SignalR" Version="1.1.0" />
     <PackageReference Include="Microsoft.AspNetCore.SignalR.Common" Version="5.0.6" />
