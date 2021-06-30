@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Abp.Authorization;
+using DNTPersianUtils.Core;
 using Hatra.Messenger.Authorization;
 using Hatra.Messenger.Authorization.Users;
 using Hatra.Messenger.Models.TokenAuth;
@@ -24,19 +25,27 @@ namespace Hatra.Messenger.Controllers
         }
 
         [HttpGet]
-        public async Task<ActionResult<UserInfoDto>> GetByUsername(string username)
+        public async Task<ActionResult<UserInfoDto>> GetByUsernameOrPhone(string usernameOrPhone)
         {
-            if (string.IsNullOrWhiteSpace(username)) return BadRequest();
+            if (string.IsNullOrWhiteSpace(usernameOrPhone)) return BadRequest();
+            User user;
+            if (usernameOrPhone.IsValidIranianPhoneNumber())
+            {
+                user = await _userManager.FindByPhoneNumber(usernameOrPhone);
+            }
+            else
+            {
+                user = await _userManager.GetByUsernameAsync(usernameOrPhone);
+            }
 
-            var user = await _userManager.GetByUsernameAsync(username);
             if (user == null) return NotFound();
 
             return new ActionResult<UserInfoDto>(new UserInfoDto
             {
                 Id = user.Id,
-                Status = string.Empty,
+                Status = user.Status,
                 FullName = user.FullName,
-                AvatarAddress = string.Empty,
+                AvatarAddress = user.AvatarAddress,
                 Username = user.UserName
             });
         }
@@ -50,9 +59,9 @@ namespace Hatra.Messenger.Controllers
             return new ActionResult<UserInfoDto>(new UserInfoDto
             {
                 Id = user.Id,
-                Status = string.Empty,
+                Status = user.Status,
                 FullName = user.FullName,
-                AvatarAddress = string.Empty,
+                AvatarAddress = user.AvatarAddress,
                 Username = user.UserName
             });
         }
