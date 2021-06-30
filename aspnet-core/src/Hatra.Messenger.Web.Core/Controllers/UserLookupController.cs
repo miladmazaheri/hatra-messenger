@@ -7,7 +7,10 @@ using Abp.Authorization;
 using DNTPersianUtils.Core;
 using Hatra.Messenger.Authorization;
 using Hatra.Messenger.Authorization.Users;
+using Hatra.Messenger.Common.Users;
 using Hatra.Messenger.Models.TokenAuth;
+using Hatra.Messenger.Models.Users;
+using Hatra.Messenger.Users;
 using Hatra.Messenger.Users.Dto;
 using Microsoft.AspNetCore.Mvc;
 
@@ -18,10 +21,11 @@ namespace Hatra.Messenger.Controllers
     public class UserLookupController : MessengerControllerBase
     {
         private readonly UserManager _userManager;
-
-        public UserLookupController(UserManager userManager)
+        private readonly IUserAppService _userAppService;
+        public UserLookupController(UserManager userManager, IUserAppService userAppService)
         {
             _userManager = userManager;
+            _userAppService = userAppService;
         }
 
         [HttpGet]
@@ -29,7 +33,7 @@ namespace Hatra.Messenger.Controllers
         {
             if (string.IsNullOrWhiteSpace(usernameOrPhone)) return BadRequest();
             User user;
-            if (usernameOrPhone.IsValidIranianPhoneNumber())
+            if (usernameOrPhone.IsValidIranianMobileNumber())
             {
                 user = await _userManager.FindByPhoneNumber(usernameOrPhone);
             }
@@ -64,6 +68,14 @@ namespace Hatra.Messenger.Controllers
                 AvatarAddress = user.AvatarAddress,
                 Username = user.UserName
             });
+        }
+
+        [HttpPost]
+        public async Task<ActionResult<List<UserInfoDto>>> GetAllByPhoneList([FromBody] UserByPhoneListModel model)
+        {
+            if (model ==null || model.Phones == null || model.Phones.Count == 0) return BadRequest();
+            var phones = model.Phones.Where(x => x.IsValidIranianMobileNumber()).ToList();
+            return new ActionResult<List<UserInfoDto>>(await _userAppService.GetAllByPhoneListAsync(phones));
         }
     }
 }

@@ -18,6 +18,8 @@ using Hatra.Messenger.Authorization;
 using Hatra.Messenger.Authorization.Accounts;
 using Hatra.Messenger.Authorization.Roles;
 using Hatra.Messenger.Authorization.Users;
+using Hatra.Messenger.Common.Users;
+using Hatra.Messenger.EntityFrameworkCore.Repositories;
 using Hatra.Messenger.Roles.Dto;
 using Hatra.Messenger.Users.Dto;
 using Microsoft.AspNetCore.Identity;
@@ -25,7 +27,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Hatra.Messenger.Users
 {
-    
+
     [AbpAuthorize(PermissionNames.Pages_Users)]
     public class UserAppService : AsyncCrudAppService<User, UserDto, long, PagedUserResultRequestDto, CreateUserDto, UserDto>, IUserAppService
     {
@@ -35,7 +37,7 @@ namespace Hatra.Messenger.Users
         private readonly IPasswordHasher<User> _passwordHasher;
         private readonly IAbpSession _abpSession;
         private readonly LogInManager _logInManager;
-
+        private readonly IUserRepository _userRepository;
         public UserAppService(
             IRepository<User, long> repository,
             UserManager userManager,
@@ -43,7 +45,7 @@ namespace Hatra.Messenger.Users
             IRepository<Role> roleRepository,
             IPasswordHasher<User> passwordHasher,
             IAbpSession abpSession,
-            LogInManager logInManager)
+            LogInManager logInManager, IUserRepository userRepository)
             : base(repository)
         {
             _userManager = userManager;
@@ -52,6 +54,7 @@ namespace Hatra.Messenger.Users
             _passwordHasher = passwordHasher;
             _abpSession = abpSession;
             _logInManager = logInManager;
+            _userRepository = userRepository;
         }
 
         public override async Task<UserDto> CreateAsync(CreateUserDto input)
@@ -197,7 +200,7 @@ namespace Hatra.Messenger.Users
             {
                 throw new Exception("There is no current user!");
             }
-            
+
             if (await _userManager.CheckPasswordAsync(user, input.CurrentPassword))
             {
                 CheckErrors(await _userManager.ChangePasswordAsync(user, input.NewPassword));
@@ -213,25 +216,30 @@ namespace Hatra.Messenger.Users
             return true;
         }
 
+        public Task<List<UserInfoDto>> GetAllByPhoneListAsync(List<string> phones)
+        {
+            return _userRepository.GetAllByPhoneListAsync(phones);
+        }
+
         public async Task<bool> ResetPassword(ResetPasswordDto input)
         {
             if (_abpSession.UserId == null)
             {
                 throw new UserFriendlyException("Please log in before attempting to reset password.");
             }
-            
+
             var currentUser = await _userManager.GetUserByIdAsync(_abpSession.GetUserId());
             var loginAsync = await _logInManager.LoginAsync(currentUser.UserName, input.AdminPassword, shouldLockout: false);
             if (loginAsync.Result != AbpLoginResultType.Success)
             {
                 throw new UserFriendlyException("Your 'Admin Password' did not match the one on record.  Please try again.");
             }
-            
+
             if (currentUser.IsDeleted || !currentUser.IsActive)
             {
                 return false;
             }
-            
+
             var roles = await _userManager.GetRolesAsync(currentUser);
             if (!roles.Contains(StaticRoleNames.Tenants.Admin))
             {

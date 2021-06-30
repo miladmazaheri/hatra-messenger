@@ -110,7 +110,8 @@ namespace Hatra.Messenger.EntityFrameworkCore.Repositories
                 ChatId = chat.Id,
                 LogoAddress = receiver.AvatarAddress,
                 Title = receiver.FullName,
-                UnreadCount = 0
+                UnreadCount = 0,
+                UserId = receiver.Id
             };
 
 

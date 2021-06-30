@@ -73,7 +73,7 @@ namespace Hatra.Messenger.Controllers
             var device = GetDevice();
             var ip = GetIpAddress();
             var accessToken = CreateAccessToken(CreateJwtClaims(loginResult.Identity));
-            var refreshToken =await CreateRefreshTokenAsync(loginResult.User.Id,device,ip);
+            //var refreshToken =await CreateRefreshTokenAsync(loginResult.User.Id,device,ip);
             return new AuthenticateResultModel
             {
                 AccessToken = accessToken,
@@ -81,7 +81,7 @@ namespace Hatra.Messenger.Controllers
                 ExpireInSeconds = (int)_configuration.Expiration.TotalSeconds,
                 RefreshExpireInSeconds = (int)_configuration.RefreshExpiration.TotalSeconds,
                 UserId = loginResult.User.Id,
-                RefreshToken = refreshToken
+                //RefreshToken = refreshToken
             };
         }
 

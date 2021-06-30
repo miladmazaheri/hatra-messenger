@@ -1,6 +1,8 @@
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using Abp.Application.Services;
 using Abp.Application.Services.Dto;
+using Hatra.Messenger.Common.Users;
 using Hatra.Messenger.Roles.Dto;
 using Hatra.Messenger.Users.Dto;
 
@@ -15,5 +17,6 @@ namespace Hatra.Messenger.Users
         Task ChangeLanguage(ChangeUserLanguageDto input);
 
         Task<bool> ChangePassword(ChangePasswordDto input);
+        Task<List<UserInfoDto>> GetAllByPhoneListAsync(List<string> phones);
     }
 }
