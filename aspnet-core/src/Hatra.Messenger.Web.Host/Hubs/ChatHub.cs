@@ -52,18 +52,25 @@ namespace Hatra.Messenger.Web.Host.Hubs
 
         private async Task SendFcm(string token, ReceivedMessageDto messageModel)
         {
-            var senderNameClaim = Context.User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.GivenName);
-
-            var messageId = await _firebaseMessaging.SendAsync(new Message()
+            try
             {
-                Token = token,
-                Notification = new Notification()
+                var senderNameClaim = Context.User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.GivenName);
+
+                var messageId = await _firebaseMessaging.SendAsync(new Message()
                 {
-                    Body = messageModel.Text,
-                    ImageUrl = messageModel.ThumbnailAddress,
-                    Title = senderNameClaim?.Value ?? string.Empty
-                }
-            });
+                    Token = token,
+                    Notification = new Notification()
+                    {
+                        Body = messageModel.Text,
+                        ImageUrl = messageModel.ThumbnailAddress,
+                        Title = senderNameClaim?.Value ?? string.Empty
+                    }
+                });
+            }
+            catch (Exception)
+            {
+                // ignored
+            }
         }
 
         public async Task SendPrivateMessage(long receiverId, Guid chatId, string message)
