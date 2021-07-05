@@ -21,11 +21,11 @@ namespace Hatra.Messenger.Controllers
     public class UserLookupController : MessengerControllerBase
     {
         private readonly UserManager _userManager;
-        private readonly IUserAppService _userAppService;
-        public UserLookupController(UserManager userManager, IUserAppService userAppService)
+        private readonly IUserLookupAppService _userLookupAppService;
+        public UserLookupController(UserManager userManager, IUserLookupAppService userLookupAppService)
         {
             _userManager = userManager;
-            _userAppService = userAppService;
+            _userLookupAppService = userLookupAppService;
         }
 
         [HttpGet]
@@ -75,7 +75,7 @@ namespace Hatra.Messenger.Controllers
         {
             if (model ==null || model.Phones == null || model.Phones.Count == 0) return BadRequest();
             var phones = model.Phones.Where(x => x.IsValidIranianMobileNumber()).ToList();
-            return new ActionResult<List<UserInfoDto>>(await _userAppService.GetAllByPhoneListAsync(phones));
+            return new ActionResult<List<UserInfoDto>>(await _userLookupAppService.GetAllByPhoneListAsync(phones));
         }
     }
 }

@@ -17,6 +17,6 @@ namespace Hatra.Messenger.Users
         Task ChangeLanguage(ChangeUserLanguageDto input);
 
         Task<bool> ChangePassword(ChangePasswordDto input);
-        Task<List<UserInfoDto>> GetAllByPhoneListAsync(List<string> phones);
+        
     }
 }

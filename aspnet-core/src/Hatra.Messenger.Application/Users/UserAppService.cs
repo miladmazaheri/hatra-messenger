@@ -216,10 +216,7 @@ namespace Hatra.Messenger.Users
             return true;
         }
 
-        public Task<List<UserInfoDto>> GetAllByPhoneListAsync(List<string> phones)
-        {
-            return _userRepository.GetAllByPhoneListAsync(phones);
-        }
+        
 
         public async Task<bool> ResetPassword(ResetPasswordDto input)
         {
