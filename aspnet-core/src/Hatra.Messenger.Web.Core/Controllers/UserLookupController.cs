@@ -37,22 +37,38 @@ namespace Hatra.Messenger.Controllers
             if (usernameOrPhone.IsValidIranianMobileNumber())
             {
                 user = await _userManager.FindByPhoneNumber(usernameOrPhone);
+                if (user != null)
+                {
+                    return new ActionResult<UserInfoDto>(new UserInfoDto
+                    {
+                        Id = user.Id,
+                        Status = user.Status,
+                        FullName = user.FullName,
+                        AvatarAddress = user.AvatarAddress,
+                        Username = user.UserName,
+                        PhoneNumber = user.PhoneNumber
+                    });
+                }
             }
             else
             {
                 user = await _userManager.GetByUsernameAsync(usernameOrPhone);
+                if (user != null)
+                {
+                    return new ActionResult<UserInfoDto>(new UserInfoDto
+                    {
+                        Id = user.Id,
+                        Status = user.Status,
+                        FullName = user.FullName,
+                        AvatarAddress = user.AvatarAddress,
+                        Username = user.UserName
+                    });
+                }
             }
 
-            if (user == null) return NotFound();
+            return NotFound();
 
-            return new ActionResult<UserInfoDto>(new UserInfoDto
-            {
-                Id = user.Id,
-                Status = user.Status,
-                FullName = user.FullName,
-                AvatarAddress = user.AvatarAddress,
-                Username = user.UserName
-            });
+            
         }
 
         [HttpGet]
