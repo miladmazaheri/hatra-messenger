@@ -35,7 +35,7 @@ namespace Hatra.Messenger.Common.DataTransferObjects.Chat
 
         }
 
-        public ChatContentDto(Guid chatId, long userId,DateTime creationTime ,ReceivedMessageDto message)
+        public ChatContentDto(Guid chatId, long userId, DateTime creationTime, ReceivedMessageDto message)
         {
             ChatId = chatId;
             UserId = userId;
@@ -57,15 +57,25 @@ namespace Hatra.Messenger.Common.DataTransferObjects.Chat
         [Required]
         public Guid ChatId { get; set; }
         [Required]
-        public DateTime BaseDateTime { get; set; } =DateTime.Now;
+        public DateTime BaseDateTime { get; set; } = DateTime.Now;
 
     }
 
-    public class DeleteChatContentDto :DeleteChatDto
+    public class MessageAckDto
+    {
+        [Required]
+        public Guid ChatId { get; set; }
+        [Required] 
+        public Guid MessageId { get; set; }
+        [Required]
+        public long ReceiverId { get; set; }
+    }
+
+    public class DeleteChatContentDto : DeleteChatDto
     {
         [Required]
         public List<Guid> MessageIds { get; set; }
-       
+
     }
     public class DeleteChatDto
     {

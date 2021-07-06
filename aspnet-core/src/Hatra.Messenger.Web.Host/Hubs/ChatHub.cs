@@ -28,49 +28,22 @@ namespace Hatra.Messenger.Web.Host.Hubs
         public static readonly ConcurrentDictionary<long, List<string>> OnlineUsers = new ConcurrentDictionary<long, List<string>>();
         public static ConcurrentDictionary<long, string> UserFcmTokens = new ConcurrentDictionary<long, string>();
         protected IChatAppService ChatService { get; }
-        protected IWebHostEnvironment _hostEnvironment;
-        protected static FirebaseMessaging _firebaseMessaging;
+        protected IWebHostEnvironment HostEnvironment;
+        protected static FirebaseMessaging FireBaseMessaging;
+
         public ChatHub(IChatAppService chatService, IWebHostEnvironment hostEnvironment)
         {
             ChatService = chatService;
-            _hostEnvironment = hostEnvironment;
+            HostEnvironment = hostEnvironment;
             if (FirebaseApp.DefaultInstance == null)
             {
                 var app = FirebaseApp.Create(new AppOptions()
                 {
-                    Credential = GoogleCredential.FromFile(Path.Combine(_hostEnvironment.ContentRootPath, "hatra-chat-firebase-adminsdk-b0a02-594ba3d9ba.json")),
+                    Credential = GoogleCredential.FromFile(Path.Combine(HostEnvironment.ContentRootPath, "hatra-chat-firebase-adminsdk-b0a02-594ba3d9ba.json")),
                 });
-                _firebaseMessaging = FirebaseMessaging.GetMessaging(app);
+                FireBaseMessaging = FirebaseMessaging.GetMessaging(app);
             }
 
-        }
-        public async Task SendMessage(string message)
-        {
-            var username = Context.User?.FindFirstValue(ClaimTypes.Name) ?? "unknown";
-            await Clients.All.SendAsync("getMessage", JsonSerializer.Serialize(new MessageModel(username, message)));
-        }
-
-        private async Task SendFcm(string token, ReceivedMessageDto messageModel)
-        {
-            try
-            {
-                var senderNameClaim = Context.User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.GivenName);
-
-                var messageId = await _firebaseMessaging.SendAsync(new Message()
-                {
-                    Token = token,
-                    Notification = new Notification()
-                    {
-                        Body = messageModel.Text,
-                        ImageUrl = messageModel.ThumbnailAddress,
-                        Title = senderNameClaim?.Value ?? string.Empty
-                    }
-                });
-            }
-            catch (Exception)
-            {
-                // ignored
-            }
         }
 
         public async Task SendPrivateMessage(long receiverId, Guid chatId, string message)
@@ -90,11 +63,34 @@ namespace Hatra.Messenger.Web.Host.Hubs
                 {
                     if (UserFcmTokens.TryGetValue(receiverId, out var fcmToken))
                     {
-                        await SendFcm(fcmToken, messageModel);
+                        await SendFcmMessage(fcmToken, messageModel);
                     }
                 }
             }
         }
+        private async Task SendFcmMessage(string token, ReceivedMessageDto messageModel)
+        {
+            try
+            {
+                var senderNameClaim = Context.User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.GivenName);
+
+               _ = await FireBaseMessaging.SendAsync(new Message()
+                {
+                    Token = token,
+                    Notification = new Notification()
+                    {
+                        Body = messageModel.Text,
+                        ImageUrl = messageModel.ThumbnailAddress,
+                        Title = senderNameClaim?.Value ?? string.Empty
+                    }
+                });
+            }
+            catch (Exception)
+            {
+                // ignored
+            }
+        }
+
 
 
         public override async Task OnConnectedAsync()

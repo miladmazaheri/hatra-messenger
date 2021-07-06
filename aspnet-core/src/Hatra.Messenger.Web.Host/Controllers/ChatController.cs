@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using Abp.Authorization;
 using Abp.Runtime.Security;
@@ -32,6 +33,8 @@ namespace Hatra.Messenger.Web.Host.Controllers
             var userId = User.Identity.GetUserId().Value;
             return new ActionResult<List<ChatListItemWithLastContentDto>>(await _chatAppService.GetChatHistoryAsync(userId));
         }
+
+
         [HttpGet]
         public async Task<ActionResult<List<ChatContentDto>>> GetChatContent(ChatContentRequestDto model)
         {
@@ -41,12 +44,27 @@ namespace Hatra.Messenger.Web.Host.Controllers
             }
             return new ActionResult<List<ChatContentDto>>(await _chatAppService.GetChatContentAsync(model));
         }
+
+        [HttpGet]
+        public async Task MessageAck(MessageAckDto model)
+        {
+            if (!await _chatAppService.CanGetContentAsync(User.Identity.GetUserId().Value, model.ChatId))
+            {
+                throw new UnauthorizedAccessException("You Can Not Access Requested Chat");
+            }
+            await _chatAppService.MessageAckAsync(model.MessageId);
+            if (ChatHub.OnlineUsers.TryGetValue(model.ReceiverId, out var connectionId))
+                await _hubContext.Clients.Clients(connectionId).PushMessageAckAsync(model.MessageId);
+        }
+
+
         [HttpPost]
         public async Task<ActionResult<ChatListItemDto>> StartPrivateChat([FromBody] StartPrivateChatModel model)
         {
             var userId = User.Identity.GetUserId().Value;
             return new ActionResult<ChatListItemDto>(await _chatAppService.StartPrivateChatAsync(userId, model.ReceiverId));
         }
+
 
         [HttpDelete]
         public async Task<ActionResult> DeleteMessage([FromBody]DeleteChatContentDto model)
@@ -70,6 +88,7 @@ namespace Hatra.Messenger.Web.Host.Controllers
 
             return Ok();
         }
+
 
         [HttpDelete]
         public async Task<ActionResult> DeleteChat([FromBody]DeleteChatDto model)
