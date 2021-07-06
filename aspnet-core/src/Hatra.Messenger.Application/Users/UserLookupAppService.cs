@@ -7,6 +7,7 @@ using Abp.Application.Services;
 using Abp.Authorization;
 using Hatra.Messenger.Common.Users;
 using Hatra.Messenger.EntityFrameworkCore.Repositories;
+using JetBrains.Annotations;
 
 namespace Hatra.Messenger.Users
 {
@@ -21,9 +22,9 @@ namespace Hatra.Messenger.Users
             _userRepository = userRepository;
         }
 
-        public Task<List<UserInfoDto>> GetAllByPhoneListAsync(List<string> phones)
+        public Task<List<UserInfoDto>> GetContactsAsync([CanBeNull] List<string> phones,[CanBeNull]List<string> usernames)
         {
-            return _userRepository.GetAllByPhoneListAsync(phones);
+            return _userRepository.GetContactsAsync(phones, usernames);
         }
     }
 }

@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Abp.Authorization;
+using Abp.Extensions;
 using DNTPersianUtils.Core;
 using Hatra.Messenger.Authorization;
 using Hatra.Messenger.Authorization.Users;
@@ -71,11 +72,12 @@ namespace Hatra.Messenger.Controllers
         }
 
         [HttpPost]
-        public async Task<ActionResult<List<UserInfoDto>>> GetAllByPhoneList([FromBody] UserByPhoneListModel model)
+        public async Task<ActionResult<List<UserInfoDto>>> GetContacts([FromBody] GetContactsModel model)
         {
-            if (model ==null || model.Phones == null || model.Phones.Count == 0) return BadRequest();
-            var phones = model.Phones.Where(x => x.IsValidIranianMobileNumber()).ToList();
-            return new ActionResult<List<UserInfoDto>>(await _userLookupAppService.GetAllByPhoneListAsync(phones));
+            if (model == null || ((model.Phones == null || model.Phones.Count == 0) && (model.Usernames == null || model.Usernames.Count == 0))) return BadRequest();
+            var phones = model.Phones?.Where(x => x.IsValidIranianMobileNumber()).ToList() ?? new List<string>();
+            var usernames = model.Usernames?.Where(x => !x.IsNullOrWhiteSpace()).ToList() ?? new List<string>();
+            return new ActionResult<List<UserInfoDto>>(await _userLookupAppService.GetContactsAsync(phones, usernames));
         }
     }
 }

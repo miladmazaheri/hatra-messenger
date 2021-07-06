@@ -13,5 +13,6 @@ namespace Hatra.Messenger.Common.Users
         public string FullName { get; set; }
         public string AvatarAddress { get; set; }
         public string Status { get; set; }
+        public string PhoneNumber { get; set; }
     }
 }
