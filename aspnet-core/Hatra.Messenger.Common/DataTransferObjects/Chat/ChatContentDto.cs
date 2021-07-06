@@ -29,6 +29,8 @@ namespace Hatra.Messenger.Common.DataTransferObjects.Chat
     {
         public Guid ChatId { get; set; }
         public long UserId { get; set; }
+        public int ViewCount { get; set; }
+        public int ReceiveCount { get; set; }
         public DateTime CreationTime { get; set; }
         public ChatContentDto()
         {
@@ -67,6 +69,13 @@ namespace Hatra.Messenger.Common.DataTransferObjects.Chat
         public Guid ChatId { get; set; }
         [Required] 
         public Guid MessageId { get; set; }
+        [Required]
+        public long ReceiverId { get; set; }
+    }
+    public class ReadAckDto
+    {
+        [Required]
+        public Guid ChatId { get; set; }
         [Required]
         public long ReceiverId { get; set; }
     }
