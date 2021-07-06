@@ -46,7 +46,7 @@ namespace Hatra.Messenger.Web.Host.Controllers
         }
 
         [HttpPost]
-        public async Task MessageAck(MessageAckDto model)
+        public async Task MessageAck([FromBody] MessageAckDto model)
         {
             if (!await _chatAppService.CanGetContentAsync(User.Identity.GetUserId().Value, model.ChatId))
             {
@@ -58,7 +58,7 @@ namespace Hatra.Messenger.Web.Host.Controllers
         }
 
         [HttpPost]
-        public async Task ViewAck(ViewAckDto model)
+        public async Task ViewAck([FromBody] ViewAckDto model)
         {
             if (!await _chatAppService.CanGetContentAsync(User.Identity.GetUserId().Value, model.ChatId))
             {
