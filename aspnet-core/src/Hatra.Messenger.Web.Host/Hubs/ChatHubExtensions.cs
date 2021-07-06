@@ -13,6 +13,7 @@ namespace Hatra.Messenger.Web.Host.Hubs
         private static string DeleteMessage = "DeleteMessage";
         private static string DeleteChat = "DeleteChat";
         private static string MessageAck = "MessageAck";
+        private static string ViewAck = "ViewAck";
 
 
         public static async Task PushUploadProgressPercentAsync(this IClientProxy proxy, string uploadKey, int percent)
@@ -26,6 +27,10 @@ namespace Hatra.Messenger.Web.Host.Hubs
         public static async Task PushMessageAckAsync(this IClientProxy proxy, Guid messageId)
         {
             await proxy.SendAsync(MessageAck, messageId);
+        }
+        public static async Task PushViewAckAsync(this IClientProxy proxy, Guid chatId)
+        {
+            await proxy.SendAsync(ViewAck, chatId);
         }
         public static async Task PushDeleteChatAsync(this IClientProxy proxy, Guid chatId)
         {

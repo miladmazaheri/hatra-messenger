@@ -58,15 +58,16 @@ namespace Hatra.Messenger.Web.Host.Controllers
         }
 
         [HttpPost]
-        public async Task ReadAck(MessageAckDto model)
+        public async Task ViewAck(ViewAckDto model)
         {
             if (!await _chatAppService.CanGetContentAsync(User.Identity.GetUserId().Value, model.ChatId))
             {
                 throw new UnauthorizedAccessException("You Can Not Access Requested Chat");
             }
-            await _chatAppService.MessageAckAsync(model.MessageId);
+            await _chatAppService.ViewAckAsync(User.Identity.GetUserId().Value,model.ChatId);
+
             if (ChatHub.OnlineUsers.TryGetValue(model.ReceiverId, out var connectionId))
-                await _hubContext.Clients.Clients(connectionId).PushMessageAckAsync(model.MessageId);
+                await _hubContext.Clients.Clients(connectionId).PushViewAckAsync(model.ChatId);
         }
 
 

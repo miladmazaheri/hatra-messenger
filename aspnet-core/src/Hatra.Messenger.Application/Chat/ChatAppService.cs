@@ -63,5 +63,10 @@ namespace Hatra.Messenger.Chat
         {
             return _chatRepository.MessageAckAsync(messageId);
         }
+
+        public Task ViewAckAsync(long userId, Guid chatId)
+        {
+             return _chatRepository.ViewAckAsync(userId, chatId);
+        }
     }
 }

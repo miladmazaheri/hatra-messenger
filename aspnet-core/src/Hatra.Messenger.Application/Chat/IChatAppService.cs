@@ -9,7 +9,7 @@ using Hatra.Messenger.Common.DataTransferObjects.Chat;
 
 namespace Hatra.Messenger.Chat
 {
-    public interface IChatAppService :IApplicationService
+    public interface IChatAppService : IApplicationService
     {
         Task<List<ChatListItemWithLastContentDto>> GetChatHistoryAsync(long userId);
         Task<ChatListItemDto> StartPrivateChatAsync(long userId, long userReceiverId);
@@ -17,8 +17,9 @@ namespace Hatra.Messenger.Chat
         Task ClearAllAsync();
         Task<List<ChatContentDto>> GetChatContentAsync(ChatContentRequestDto model);
         Task<bool> CanGetContentAsync(long userId, Guid chatId);
-        Task DeleteChatContentAsync(long userId,List<Guid> messageIds);
+        Task DeleteChatContentAsync(long userId, List<Guid> messageIds);
         Task DeleteParticipantChatAsync(long userId, Guid chatId);
         Task MessageAckAsync(Guid messageId);
+        Task ViewAckAsync(long userId, Guid chatId);
     }
 }

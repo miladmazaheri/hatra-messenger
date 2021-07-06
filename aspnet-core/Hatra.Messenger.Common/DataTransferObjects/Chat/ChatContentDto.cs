@@ -72,7 +72,7 @@ namespace Hatra.Messenger.Common.DataTransferObjects.Chat
         [Required]
         public long ReceiverId { get; set; }
     }
-    public class ReadAckDto
+    public class ViewAckDto
     {
         [Required]
         public Guid ChatId { get; set; }

@@ -31,6 +31,7 @@ namespace Hatra.Messenger.EntityFrameworkCore.Repositories
         Task DeleteChatContentAsync(long userId, List<Guid> messageIds);
         Task DeleteParticipantChatAsync(long userId, Guid chatId);
         Task MessageAckAsync(Guid messageId);
+        Task ViewAckAsync(long userId, Guid chatId);
     }
     public class ChatRepository : MessengerRepositoryBase<Chat, Guid>, IChatRepository
     {
@@ -169,6 +170,14 @@ namespace Hatra.Messenger.EntityFrameworkCore.Repositories
         {
             await EnsureConnectionOpenAsync();
             var query = @$"update ChatContents set ReceiveCount = ReceiveCount+1 where Id = '{messageId}'";
+            await using var command = await CreateTSqlCommandAsync(query);
+            _ = await command.ExecuteNonQueryAsync();
+        }
+
+        public async Task ViewAckAsync(long userId, Guid chatId)
+        {
+            await EnsureConnectionOpenAsync();
+            var query = @$"update ChatContents set ViewCount = ViewCount+1 where ChatId = '{chatId}' and UserId<>'{userId}'";
             await using var command = await CreateTSqlCommandAsync(query);
             _ = await command.ExecuteNonQueryAsync();
         }
