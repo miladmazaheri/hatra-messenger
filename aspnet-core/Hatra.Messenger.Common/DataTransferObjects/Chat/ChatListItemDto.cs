@@ -17,6 +17,9 @@ namespace Hatra.Messenger.Common.DataTransferObjects
         public long? LastContent_UserId { get; set; }
         public string LastContent_Text { get; set; }
         public DateTime? LastContent_DateTime { get; set; }
+
+        public int LastContent_ViewCount { get; set; }
+        public int LastContent_ReceiveCount { get; set; }
     }
 
     public class GetChatDto
