@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
 using System.Security.Claims;
@@ -63,18 +64,19 @@ namespace Hatra.Messenger.Web.Host.Hubs
                 {
                     if (UserFcmTokens.TryGetValue(receiverId, out var fcmToken))
                     {
-                        await SendFcmMessage(fcmToken, messageModel);
+                        await SendFcmMessage(fcmToken, content);
                     }
                 }
             }
         }
-        private async Task SendFcmMessage(string token, ReceivedMessageDto messageModel)
+        private async Task SendFcmMessage(string token, ChatContentDto messageModel)
         {
             try
             {
                 var senderNameClaim = Context.User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.GivenName);
 
-               _ = await FireBaseMessaging.SendAsync(new Message()
+                var dataDictionary = new Dictionary<string, string> { { "result", JsonSerializer.Serialize(messageModel) } };
+                _ = await FireBaseMessaging.SendAsync(new Message()
                 {
                     Token = token,
                     Notification = new Notification()
@@ -82,7 +84,8 @@ namespace Hatra.Messenger.Web.Host.Hubs
                         Body = messageModel.Text,
                         ImageUrl = messageModel.ThumbnailAddress,
                         Title = senderNameClaim?.Value ?? string.Empty
-                    }
+                    },
+                    Data = dataDictionary
                 });
             }
             catch (Exception)
