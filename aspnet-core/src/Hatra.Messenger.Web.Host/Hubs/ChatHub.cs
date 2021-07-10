@@ -75,7 +75,7 @@ namespace Hatra.Messenger.Web.Host.Hubs
             {
                 var senderNameClaim = Context.User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.GivenName);
 
-                var dataDictionary = new Dictionary<string, string> { { "result", JsonSerializer.Serialize(messageModel) } };
+                var dataDictionary = new Dictionary<string, string> { { "result", JsonSerializer.Serialize(messageModel, new JsonSerializerOptions(JsonSerializerDefaults.Web)) } };
                 _ = await FireBaseMessaging.SendAsync(new Message()
                 {
                     Token = token,
