@@ -8,6 +8,7 @@ using Abp.Authorization;
 using Abp.Runtime.Security;
 using Hatra.Messenger.Authorization.Roles;
 using Hatra.Messenger.Authorization.Users;
+using Hatra.Messenger.EntityFrameworkCore.Repositories;
 using Hatra.Messenger.Users.Dto;
 using Microsoft.AspNetCore.Http;
 
@@ -18,11 +19,12 @@ namespace Hatra.Messenger.Users
     {
         private readonly UserManager _userManager;
         private readonly IHttpContextAccessor _contextAccessor;
-
-        public ProfileAppService(UserManager userManager, IHttpContextAccessor contextAccessor)
+        private readonly IChatRepository _chatRepository;
+        public ProfileAppService(UserManager userManager, IHttpContextAccessor contextAccessor, IChatRepository chatRepository)
         {
             _userManager = userManager;
             _contextAccessor = contextAccessor;
+            _chatRepository = chatRepository;
         }
 
         public virtual async Task<UserProfileDto> GetAsync()
@@ -46,6 +48,10 @@ namespace Hatra.Messenger.Users
             input.ApplyCorrectYeKe();
             MapToEntity(input, user);
             CheckErrors(await _userManager.UpdateAsync(user));
+
+            await CurrentUnitOfWork.SaveChangesAsync();
+
+            await _chatRepository.UpdateChatParticipantsAsync(userId.Value, user.FullName, user.AvatarAddress);
         }
 
         private void MapToEntity(UpdateUserProfileDto input, User user)

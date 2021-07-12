@@ -15,6 +15,7 @@ using Hatra.Messenger.Chats.Enums;
 using Hatra.Messenger.Common.DataTransferObjects;
 using Hatra.Messenger.Common.DataTransferObjects.Chat;
 using Hatra.Messenger.Tools;
+using JetBrains.Annotations;
 using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
 
@@ -32,6 +33,7 @@ namespace Hatra.Messenger.EntityFrameworkCore.Repositories
         Task DeleteParticipantChatAsync(long userId, Guid chatId);
         Task MessageAckAsync(Guid messageId);
         Task ViewAckAsync(long userId, Guid chatId);
+        Task UpdateChatParticipantsAsync(long userId, string title, string logoAddress);
     }
     public class ChatRepository : MessengerRepositoryBase<Chat, Guid>, IChatRepository
     {
@@ -179,6 +181,17 @@ namespace Hatra.Messenger.EntityFrameworkCore.Repositories
             await EnsureConnectionOpenAsync();
             var query = @$"update ChatContents set ViewCount = ViewCount+1 where ChatId = '{chatId}' and UserId<>'{userId}'";
             await using var command = await CreateTSqlCommandAsync(query);
+            _ = await command.ExecuteNonQueryAsync();
+        }
+
+        public async Task UpdateChatParticipantsAsync(long userId, [NotNull] string title, string logoAddress)
+        {
+            await EnsureConnectionOpenAsync();
+            await using var command = await CreateCommandAsync("UpdateChatParticipants", CommandType.StoredProcedure,
+                new SqlParameter("userId", userId),
+                new SqlParameter("title", title),
+                new SqlParameter("logoAddress", string.IsNullOrWhiteSpace(logoAddress) ? DBNull.Value : logoAddress)
+            );
             _ = await command.ExecuteNonQueryAsync();
         }
 
