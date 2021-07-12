@@ -40,6 +40,7 @@ namespace Hatra.Messenger.Controllers
         private readonly UserManager _userManager;
         private readonly SignInManager _signInManager;
         private readonly IRefreshTokenRepository _refreshTokenRepository;
+        private const string TempKey = "!@#_User_";
         public TokenAuthController(
             LogInManager logInManager,
             ITenantCache tenantCache,
@@ -156,9 +157,9 @@ namespace Hatra.Messenger.Controllers
 
             if (user == null)
             {
-                var userName = $"User_{model.PhoneNumber}";
+                var userName = $"{TempKey}{model.PhoneNumber}";
                 var email = $"{userName}@hatra.com";
-                user = await _userRegistrationManager.RegisterAsync("کاربر", "جدید", email, userName, userName, true, model.PhoneNumber);
+                user = await _userRegistrationManager.RegisterAsync(TempKey, TempKey, email, userName, userName, true, model.PhoneNumber);
             }
 
             var token = await _userManager.GenerateUserTokenAsync(user, "PasswordlessLoginProvider",
