@@ -40,7 +40,7 @@ namespace Hatra.Messenger.Controllers
         private readonly UserManager _userManager;
         private readonly SignInManager _signInManager;
         private readonly IRefreshTokenRepository _refreshTokenRepository;
-        private const string TempKey = "!@#_User_";
+        private const string TempKey = "TEMP_USER_";
         public TokenAuthController(
             LogInManager logInManager,
             ITenantCache tenantCache,
