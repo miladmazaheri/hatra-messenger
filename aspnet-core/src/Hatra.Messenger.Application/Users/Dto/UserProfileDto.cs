@@ -47,19 +47,12 @@ namespace Hatra.Messenger.Users.Dto
         [StringLength(AbpUserBase.MaxSurnameLength)]
         public string Surname { get; set; }
 
-        [Required]
-        [EmailAddress]
-        [StringLength(AbpUserBase.MaxEmailAddressLength)]
-        public string EmailAddress { get; set; }
 
         public string AvatarAddress{ get; set; }
 
         [StringLength(100)]
         public string Status { get; set; }
 
-        [ValidIranianMobileNumber]
-        [Required]
-        public string PhoneNumber { get; set; }
 
         public void ApplyCorrectYeKe()
         {

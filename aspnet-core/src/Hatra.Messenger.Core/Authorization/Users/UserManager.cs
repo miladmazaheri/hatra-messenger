@@ -13,6 +13,7 @@ using Abp.Domain.Repositories;
 using Abp.Domain.Uow;
 using Abp.Organizations;
 using Abp.Runtime.Caching;
+using Abp.UI;
 using Hatra.Messenger.Authorization.Roles;
 using Microsoft.EntityFrameworkCore;
 
@@ -80,7 +81,22 @@ namespace Hatra.Messenger.Authorization.Users
             if (string.IsNullOrWhiteSpace(username)) return null;
             return await Users.FirstOrDefaultAsync(x => x.NormalizedUserName == username.ToUpperInvariant());
         }
-        
 
+        public override async Task<IdentityResult> CheckDuplicateUsernameOrEmailAddressAsync(long? expectedUserId, string userName, string emailAddress)
+        {
+            var user = (await FindByNameAsync(userName));
+            if (user != null && user.Id != expectedUserId)
+            {
+                throw new UserFriendlyException("DuplicateUserName");
+            }
+
+            user = (await FindByEmailAsync(emailAddress));
+            if (user != null && user.Id != expectedUserId)
+            {
+                throw new UserFriendlyException("DuplicateEmail");
+            }
+
+            return IdentityResult.Success;
+        }
     }
 }
