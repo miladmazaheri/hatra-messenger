@@ -22,6 +22,7 @@ using Hatra.Messenger.Identity;
 using Hatra.Messenger.Models.TokenAuth;
 using Hatra.Messenger.MultiTenancy;
 using Hatra.Messenger.SMS;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.IdentityModel.Tokens;
 
 namespace Hatra.Messenger.Controllers
@@ -207,6 +208,8 @@ namespace Hatra.Messenger.Controllers
         }
 
         [HttpPost]
+        [AbpAllowAnonymous]
+        [AllowAnonymous]
         public async Task<ActionResult<AuthenticateResultModel>> Refresh([FromBody] RefreshRequest request)
         {
             if (!IsValidToken(request.AccessToken))
